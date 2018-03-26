@@ -90,6 +90,4 @@ public class Data {
         this.componentCode = componentCode;
     }
 
-
-
 }

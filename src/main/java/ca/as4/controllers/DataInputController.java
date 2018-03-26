@@ -8,15 +8,16 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import static java.lang.System.exit;
 
 @RestController
 public class DataInputController {
+    SortController sorter = new SortController();
     private ArrayList<String[]> csvData = new ArrayList<>();
     private ArrayList<Data> allData = new ArrayList<>();
     private final int SIZE_OF_A_CLASS = 8;
+    private int numLists = 0;
 
     private String[] topCSVRow = {"SEMESTER", "SUBJECT", "CATALOGNUMBER",
                                   "LOCATION", "ENROLMENTCAPACITY", "ENROLMENTTOTAL",
@@ -28,7 +29,11 @@ public class DataInputController {
         CSVReader();
         populateDataModel();
 
-        DisplayOrganizedData display = new DisplayOrganizedData(allData);
+        ArrayList<Data>[] organizeClasses = new ArrayList[numLists];
+        buildArrayList(organizeClasses);
+        sorter.sortDataByClassName(organizeClasses, allData);
+
+//        DisplayOrganizedData display = new DisplayOrganizedData(allData);
     }
 
     private void CSVReader()
@@ -78,42 +83,51 @@ public class DataInputController {
     {
         Data classData = new Data();
         int semester = Integer.parseInt(tempArr[0]);
-        String subject = tempArr[1];
-        String catalogNumber = tempArr[2];
-        String location = tempArr[3];
+        String subject = fixStrings(tempArr[1]);
+        String catalogNumber = fixStrings(tempArr[2]);
+        String location = fixStrings(tempArr[3]);
         int enrollmentCapacity = Integer.parseInt(tempArr[4]);
         int enrollmentTotal = Integer.parseInt(tempArr[5]);
         ArrayList<String> instructors = new ArrayList<>();
-        String componentCode = "";
+        String componentCode;
 
         if (tempArr.length >= SIZE_OF_A_CLASS && tempArr[7].length() > 3)
         {
             int currentIndex = 6;
-            while (currentIndex < tempArr.length)
+            while (currentIndex < tempArr.length-1)
             {
                 if (tempArr[currentIndex].contains("\""))
                 {
-                    String changedStr = tempArr[currentIndex].replace("\"", "");
+                    String changedStr;
+                    changedStr = tempArr[currentIndex].replace("\"", "");
+                    changedStr = fixStrings(changedStr);
+
                     instructors.add(changedStr);
                 }
                 else
                 {
-                    instructors.add(tempArr[currentIndex]);
+                    String changedStr;
+                    changedStr = fixStrings(tempArr[currentIndex]);
+                    instructors.add(changedStr);
                 }
 
                 currentIndex++;
             }
+            componentCode = tempArr[currentIndex];
         }
         else
         {
             if (tempArr[6].contains("\""))
             {
                 String changedStr = tempArr[6].replace("\"", "");
+                changedStr = fixStrings(changedStr);
                 instructors.add(changedStr);
             }
             else
             {
-                instructors.add(tempArr[6]);
+                String changedStr;
+                changedStr = fixStrings(tempArr[6]);
+                instructors.add(changedStr);
             }
             componentCode = tempArr[7];
         }
@@ -126,7 +140,40 @@ public class DataInputController {
         classData.setEnrollmentTotal(enrollmentTotal);
         classData.setInstructors(instructors);
         classData.setComponentCode(componentCode);
-        
+
+        boolean isComponentCodeAClass = (!classData.getComponentCode().equals("TUT")
+                || !classData.getComponentCode().equals("LAB")
+                || !classData.getComponentCode().equals("OPL")
+                || !classData.getComponentCode().equals("WKS"));
+
+        if (!allData.contains(classData) && isComponentCodeAClass)
+        {
+            numLists++;
+        }
+
         allData.add(classData);
+    }
+
+    private String fixStrings(String changedStr)
+    {
+        String stringToFix = changedStr;
+
+        for (int i = 0; i < stringToFix.length()-1; i++)
+        {
+            if (stringToFix.charAt(i) == ' ' && stringToFix.charAt(i+1) == ' ')
+            {
+                stringToFix = changedStr.substring(0, i);
+            }
+        }
+
+        return stringToFix;
+    }
+
+    private void buildArrayList(ArrayList<Data>[] organizeByClass)
+    {
+        for (int i = 0; i < numLists; i++)
+        {
+            organizeByClass[i] = new ArrayList<>();
+        }
     }
 }
