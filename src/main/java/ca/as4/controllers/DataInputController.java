@@ -26,30 +26,33 @@ public class DataInputController {
     @GetMapping("/dump-model")
     public void dumpModel()
     {
-        CSVReader();
+        retrieveCSVData();
         populateDataModel();
 
         ArrayList<Data>[] organizeClasses = new ArrayList[numLists];
         buildArrayList(organizeClasses);
         sorter.sortDataByClassName(organizeClasses, allData);
 
-//        DisplayOrganizedData display = new DisplayOrganizedData(allData);
+        DisplayOrganizedData display = new DisplayOrganizedData(allData);
     }
 
-    private void CSVReader()
+    private void retrieveCSVData()
     {
-        String CSVFileLocation = "data/course_data_2018.csv";
+        String CSVFile = "data/course_data_2018.csv";
         String splitCSVBy = ",";
         String currentLine;
 
-        try (BufferedReader br = new BufferedReader(new FileReader(CSVFileLocation)))
+        // open csv file
+        try (BufferedReader br = new BufferedReader(new FileReader(CSVFile)))
         {
             while ((currentLine = br.readLine()) != null)
             {
-                String[] arrTemp = currentLine.split(splitCSVBy);
-                csvData.add(arrTemp);
+                // grab all entries on each line, add to ArrayList
+                String[] line = currentLine.split(splitCSVBy);
+                csvData.add(line);
             }
         }
+        // file unable to open
         catch (IOException e)
         {
             exit(0);
@@ -58,20 +61,20 @@ public class DataInputController {
 
     private void populateDataModel()
     {
-        for (String[] tempArr : csvData)
+        for (String[] line : csvData)
         {
-            if (tempNotTopRow(tempArr[0]))
+            if (notTopRow(line[0]))
             {
-                convertDataAndInsert(tempArr);
+                convertDataAndInsert(line);
             }
         }
     }
 
-    private boolean tempNotTopRow(String temp)
+    private boolean notTopRow(String lineEntry)
     {
         for (String compareString : topCSVRow)
         {
-            if (compareString.equals(temp))
+            if (compareString.equals(lineEntry))
             {
                 return false;
             }
@@ -79,27 +82,30 @@ public class DataInputController {
         return true;
     }
 
-    private void convertDataAndInsert(String[] tempArr)
+    private void convertDataAndInsert(String[] line)
     {
+        // create new blank data object
         Data classData = new Data();
-        int semester = Integer.parseInt(tempArr[0]);
-        String subject = fixStrings(tempArr[1]);
-        String catalogNumber = fixStrings(tempArr[2]);
-        String location = fixStrings(tempArr[3]);
-        int enrollmentCapacity = Integer.parseInt(tempArr[4]);
-        int enrollmentTotal = Integer.parseInt(tempArr[5]);
+
+        // grab the entries for a line
+        int semester = Integer.parseInt(line[0]);
+        String subject = fixStrings(line[1]);
+        String catalogNumber = fixStrings(line[2]);
+        String location = fixStrings(line[3]);
+        int enrollmentCapacity = Integer.parseInt(line[4]);
+        int enrollmentTotal = Integer.parseInt(line[5]);
         ArrayList<String> instructors = new ArrayList<>();
         String componentCode;
 
-        if (tempArr.length >= SIZE_OF_A_CLASS && tempArr[7].length() > 3)
+        if (line.length >= SIZE_OF_A_CLASS && line[7].length() > 3)
         {
             int currentIndex = 6;
-            while (currentIndex < tempArr.length-1)
+            while (currentIndex < line.length-1)
             {
-                if (tempArr[currentIndex].contains("\""))
+                if (line[currentIndex].contains("\""))
                 {
                     String changedStr;
-                    changedStr = tempArr[currentIndex].replace("\"", "");
+                    changedStr = line[currentIndex].replace("\"", "");
                     changedStr = fixStrings(changedStr);
 
                     instructors.add(changedStr);
@@ -107,29 +113,29 @@ public class DataInputController {
                 else
                 {
                     String changedStr;
-                    changedStr = fixStrings(tempArr[currentIndex]);
+                    changedStr = fixStrings(line[currentIndex]);
                     instructors.add(changedStr);
                 }
 
                 currentIndex++;
             }
-            componentCode = tempArr[currentIndex];
+            componentCode = line[currentIndex];
         }
         else
         {
-            if (tempArr[6].contains("\""))
+            if (line[6].contains("\""))
             {
-                String changedStr = tempArr[6].replace("\"", "");
+                String changedStr = line[6].replace("\"", "");
                 changedStr = fixStrings(changedStr);
                 instructors.add(changedStr);
             }
             else
             {
                 String changedStr;
-                changedStr = fixStrings(tempArr[6]);
+                changedStr = fixStrings(line[6]);
                 instructors.add(changedStr);
             }
-            componentCode = tempArr[7];
+            componentCode = line[7];
         }
 
         classData.setSemester(semester);

@@ -12,10 +12,11 @@ public class Data {
     private ArrayList<String> instructors;
     private String componentCode;
 
-    public Data() {
-    }
+    public Data() { }
 
-    public Data(int semester, String subject, String catalogNumber, String location, int enrollmentCapacity, int enrollmentTotal, ArrayList<String> instructors, String componentCode) {
+    public Data(int semester, String subject, String catalogNumber, String location, int enrollmentCapacity,
+                int enrollmentTotal, ArrayList<String> instructors, String componentCode)
+    {
         this.semester = semester;
         this.subject = subject;
         this.catalogNumber = catalogNumber;
