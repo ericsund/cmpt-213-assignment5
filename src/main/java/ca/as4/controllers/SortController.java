@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class SortController {
+    private int numClassesInList = 0;
 
     public SortController() { }
 
@@ -29,11 +30,25 @@ public class SortController {
             }
         }
 
+        numClassesInList = counter;
 
-        sortEachArrayList(organizeClasses);
+        System.out.print(numClassesInList + " " + organizeClasses.length + " " + allData.size());
+
+        ArrayList<Data>[] fixedListClasses = fixArrayListSize(organizeClasses);
+        sortEachArrayList(fixedListClasses);
+        displayClassData(fixedListClasses);
 //        printDump(groupByClass(organizeClasses));
-//        displayClassData(organizeClasses);
-//        displayDump(organizeClasses);
+    }
+
+    private ArrayList<Data>[] fixArrayListSize(ArrayList<Data>[] organizedClasses)
+    {
+        ArrayList<Data>[] fixedArr = new ArrayList[numClassesInList];
+        for (int i = 0; i < numClassesInList; i++)
+        {
+            fixedArr[i] = new ArrayList<>();
+            fixedArr[i] = organizedClasses[i];
+        }
+        return fixedArr;
     }
 
     private boolean checkInOrganizedClass(Data checkData, ArrayList<Data>[] organizeClasses)
@@ -59,6 +74,15 @@ public class SortController {
                 }
             });
         }
+
+        Arrays.sort(organizeClasses, new Comparator<ArrayList<Data>>() {
+            @Override
+            public int compare(ArrayList<Data> o1, ArrayList<Data> o2) {
+                String o1Class = o1.get(0).getSubject() + " " + o1.get(0).getCatalogNumber();
+                String o2Class = o2.get(0).getSubject() + " " + o2.get(0).getCatalogNumber();
+                return o1Class.compareTo(o2Class);
+            }
+        });
     }
 
     private void findAndInsertRelatedData(ArrayList<Data> allData, ArrayList<Data>[] organizeClasses, Data compareData, int counter)
@@ -151,6 +175,8 @@ public class SortController {
 //        ArrayList<ArrayList<ArrayList<Data>>> groupedData = new ArrayList<>();
 //        boolean addedExisting = false;
 //
+//
+//
 //        for (int j = 0; j < organizedData.length; j++) {
 //            if (organizedData[j].size() > 0) {
 //
@@ -187,23 +213,23 @@ public class SortController {
 //        }
 //        return groupedData;
 //    }
-
-    private void printDump(ArrayList<ArrayList<ArrayList<Data>>> groupedData) {
-        for (ArrayList<ArrayList<Data>> currentClassSet : groupedData) {
-
-            System.out.println(currentClassSet.get(0).get(0).getSubject() + " " +
-                    currentClassSet.get(0).get(0).getCatalogNumber());
-
-            for (ArrayList<Data> currentClassSemester : currentClassSet) {
-                for (Data currentClass : currentClassSemester) {
-
-                    System.out.println("\t" + currentClass.getSemester() + " in " + currentClass.getLocation() +
-                    " by " + currentClass.getInstructors());
-                    System.out.println("\tType=" + currentClass.getComponentCode() + ", Enrollment=blankfornow");
-                }
-            }
-        }
-    }
+//
+//    private void printDump(ArrayList<ArrayList<ArrayList<Data>>> groupedData) {
+//        for (ArrayList<ArrayList<Data>> currentClassSet : groupedData) {
+//
+//            System.out.println(currentClassSet.get(0).get(0).getSubject() + " " +
+//                    currentClassSet.get(0).get(0).getCatalogNumber());
+//
+//            for (ArrayList<Data> currentClassSemester : currentClassSet) {
+//                for (Data currentClass : currentClassSemester) {
+//
+//                    System.out.println("\t" + currentClass.getSemester() + " in " + currentClass.getLocation() +
+//                    " by " + currentClass.getInstructors());
+//                    System.out.println("\tType=" + currentClass.getComponentCode() + ", Enrollment=blankfornow");
+//                }
+//            }
+//        }
+//    }
 
     private String displayAllInstructors(Data classFileWithInstructors)
     {
