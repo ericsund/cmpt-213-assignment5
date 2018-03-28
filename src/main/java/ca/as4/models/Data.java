@@ -1,6 +1,7 @@
 package ca.as4.models;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Data {
     private int semester;
