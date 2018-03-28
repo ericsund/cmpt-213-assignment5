@@ -27,7 +27,9 @@ public class SortController {
             }
         }
 
-        displayClassData(organizeClasses);
+        printDump(groupByClass(organizeClasses));
+
+//        displayClassData(organizeClasses);
 //        displayDump(organizeClasses);
     }
 
@@ -128,76 +130,64 @@ public class SortController {
         }
     }
 
-    /* todo this method scans through each element in the organizedData ArrayList, and prints out course offerings
-    for each course.  Each element in organizedData is a specific semester (ie. 1171) of a course (ie. CMPT 295).
-    Each course was assumed to be grouped side-by-side (ie. semester A of CMPT 295, semester B of CMPT 295, semester A
-    of MATH 232, semester B of MATH 232, etc.).  This method checks if consecutive courses are the same, and prints its
-    offerings accordingly.  Bug right now: it doesn't print offerings for non-consecutive courses.
+    // groups all sections of the same class together
+    private ArrayList<ArrayList<ArrayList<Data>>> groupByClass(ArrayList<Data>[] organizedData) {
+        ArrayList<ArrayList<ArrayList<Data>>> groupedData = new ArrayList<>();
+        boolean addedExisting = false;
 
-    Something to consider: is this even a good approach?  If we want to do this then we need to make sure all courses
-    are grouped together, which is not the case right now (ie. 1177 CMPT 295 is way down the list away from everything).
-    */
+        for (int j = 0; j < organizedData.length; j++) {
+            if (organizedData[j].size() > 0) {
 
+                String currentSubject = organizedData[j].get(0).getSubject();
+                String currentCatalogNumber = organizedData[j].get(0).getCatalogNumber();
 
-//    private void displayDump(ArrayList<Data>[] organizedData) {
-////        for (ArrayList<Data> currentList : organizedData)
-////        {
-////            System.out.println(currentList.get(0).getSubject() + " "
-////                    + currentList.get(0).getCatalogNumber());
-////
-////            System.out.print("      ");
-////
-////        }
-//
-//        for (int j = 0; j < organizedData.length; j++) {
-//
-//            ArrayList<Data> currentList = organizedData[j];
-//            if (currentList.size() > 0) {
-//
-//                // on the very first iteration, print everything
-//                if (j == 0) {
-//
-//                    // print the course subject and catalog number
-//                    System.out.println(currentList.get(0).getSubject() + " " +
-//                            currentList.get(0).getCatalogNumber());
-//
-//                    // per section and location of a course, print its offerings
-//                    for (int i = 0; i < currentList.size(); i++) {
-//                        System.out.println("\t" + currentList.get(i).getSemester() + " in " +
-//                                currentList.get(i).getLocation() + " by " + currentList.get(i).getInstructors());
-//                        System.out.println("\tType=" + currentList.get(i).getComponentCode() + ", Enrollment=blank");
-//                    }
-//                }
-//
-//                // on all other iterations
-//                // if the current course is the same as the last one, we only need its offerings
-//                else if (organizedData[j].get(0).getSubject().equals(organizedData[j - 1].get(0).getSubject()) &&
-//                organizedData[j].get(0).getCatalogNumber().equals(organizedData[j - 1].get(0).getCatalogNumber())) {
-//
-//                    // per section and location of a course, print its offerings
-//                    for (int i = 0; i < currentList.size(); i++) {
-//                        System.out.println("\t" + currentList.get(i).getSemester() + " in " +
-//                                currentList.get(i).getLocation() + " by " + currentList.get(i).getInstructors());
-//                        System.out.println("\tType=" + currentList.get(i).getComponentCode() + ", Enrollment=blank");
-//                    }
-//                }
-//
-//                else {
-//                    // print the course subject and catalog number
-//                    System.out.println(currentList.get(0).getSubject() + " " +
-//                            currentList.get(0).getCatalogNumber());
-//
-                      // todo the output gets corrupted when trying to print the course offerings for a new course here
-//                    // per section and location of a course, print its offerings
-//                    for (int i = 0; i < currentList.size(); i++) {
-//                        System.out.println("\t" + currentList.get(i).getSemester() + " in " +
-//                                currentList.get(i).getLocation() + " by " + currentList.get(i).getInstructors());
-//                        System.out.println("\tType=" + currentList.get(i).getComponentCode() + ", Enrollment=blank");
-//                    }
-//                }
-//            }
-//        }
-//    }
+                // check if this is inside our groupedData structure
+                addToGroup : {
+                    for (int i = 0; i < groupedData.size(); i++) {
+
+                        if (groupedData.get(i).size() > 0) {
+
+                            String subjectCompare = groupedData.get(i).get(0).get(0).getSubject();
+                            String catalogNumberCompare = groupedData.get(i).get(0).get(0).getSubject();
+
+                            // add to existing group
+                            if (currentSubject.equals(subjectCompare) && currentCatalogNumber.equals(catalogNumberCompare)) {
+                                groupedData.get(i).add(organizedData[j]);
+                                addedExisting = true;
+                                break addToGroup;
+                            }
+                        }
+                    }
+                }
+
+                if (!addedExisting) {
+                    // we searched all of groupData and did not find it, so add the ArrayList to the back (a new spot)
+                    ArrayList<ArrayList<Data>> newList = new ArrayList<>();
+                    newList.add(organizedData[j]);
+                    groupedData.add(newList);
+                    addedExisting = false;
+                }
+            }
+        }
+        return groupedData;
+    }
+
+    private void printDump(ArrayList<ArrayList<ArrayList<Data>>> groupedData) {
+        for (ArrayList<ArrayList<Data>> currentClassSet : groupedData) {
+
+            System.out.println(currentClassSet.get(0).get(0).getSubject() +
+                    currentClassSet.get(0).get(0).getComponentCode());
+
+            for (ArrayList<Data> currentClassSemester : currentClassSet) {
+                for (Data currentClass : currentClassSemester) {
+
+                    System.out.println("\t" + currentClass.getSemester() + " in " + currentClass.getLocation() +
+                    " by " + currentClass.getInstructors());
+                    System.out.println("\tType=" + currentClass.getComponentCode() + ", Enrollment=blankfornow");
+                }
+            }
+        }
+    }
 
     private String displayAllInstructors(Data classFileWithInstructors)
     {

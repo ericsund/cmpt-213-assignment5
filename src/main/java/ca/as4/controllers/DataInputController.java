@@ -182,4 +182,8 @@ public class DataInputController {
             organizeByClass[i] = new ArrayList<>();
         }
     }
+
+    public int getNumLists() {
+        return numLists;
+    }
 }
