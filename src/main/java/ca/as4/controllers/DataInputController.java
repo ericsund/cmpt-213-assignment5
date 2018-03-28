@@ -13,11 +13,12 @@ import static java.lang.System.exit;
 
 @RestController
 public class DataInputController {
-    SortController sorter = new SortController();
+    private DisplayOrganizedData display = new DisplayOrganizedData();
+    private SortController sorter = new SortController();
     private ArrayList<String[]> csvData = new ArrayList<>();
     private ArrayList<Data> allData = new ArrayList<>();
-    private final int SIZE_OF_A_CLASS = 8;
     private int numLists = 0;
+
 
     private String[] topCSVRow = {"SEMESTER", "SUBJECT", "CATALOGNUMBER",
                                   "LOCATION", "ENROLMENTCAPACITY", "ENROLMENTTOTAL",
@@ -31,9 +32,8 @@ public class DataInputController {
 
         ArrayList<Data>[] organizeClasses = new ArrayList[numLists];
         buildArrayList(organizeClasses);
-        sorter.sortDataByClassName(organizeClasses, allData);
-
-        DisplayOrganizedData display = new DisplayOrganizedData(allData);
+        ArrayList<Data>[] allSortedClasses = sorter.sortDataByClassName(organizeClasses, allData);
+        display.printDump(allSortedClasses);
     }
 
     private void retrieveCSVData()
@@ -96,8 +96,10 @@ public class DataInputController {
         int enrollmentTotal = Integer.parseInt(line[5]);
         ArrayList<String> instructors = new ArrayList<>();
         String componentCode;
+        int sizeOfAClass = 8;
 
-        if (line.length >= SIZE_OF_A_CLASS && line[7].length() > 3)
+
+        if (line.length >= sizeOfAClass && line[7].length() > 3)
         {
             int currentIndex = 6;
             while (currentIndex < line.length-1)
