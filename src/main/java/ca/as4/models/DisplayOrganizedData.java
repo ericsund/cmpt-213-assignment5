@@ -100,9 +100,6 @@ public class DisplayOrganizedData {
                     }
                 }
             }
-
-            // place newline after current course group
-//            System.out.println();
         }
     }
 

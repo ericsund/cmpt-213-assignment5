@@ -5,6 +5,7 @@ import ca.as4.models.DisplayOrganizedData;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,12 +40,20 @@ public class DataInputController {
 
     private void retrieveCSVData()
     {
-        String CSVFile = "data/course_data_2018.csv";
+        String CSVFile = "data/course_data_218.csv";
         String splitCSVBy = ",";
         String currentLine;
 
         // open csv file
-        try (BufferedReader br = new BufferedReader(new FileReader(CSVFile)))
+        File file = new File(CSVFile);
+
+        if (!(file.exists()))
+        {
+            System.out.println("Error: File does not exist.");
+            System.exit(1);
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file)))
         {
             while ((currentLine = br.readLine()) != null)
             {
@@ -53,10 +62,15 @@ public class DataInputController {
                 csvData.add(line);
             }
         }
-        // file unable to open
         catch (IOException e)
         {
-            exit(0);
+            System.out.println("Error: Unable to open the CSV file.");
+            System.exit(2);
+        }
+        catch (Exception e)
+        {
+            System.out.println("Error: An unknown exception occurred while processing the CSV file.");
+            System.exit(3);
         }
     }
 
