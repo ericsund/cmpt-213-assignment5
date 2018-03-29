@@ -39,7 +39,7 @@ public class DataInputController {
 
     private void retrieveCSVData()
     {
-        String CSVFile = "data/course_data_2016.csv";
+        String CSVFile = "data/course_data_2018.csv";
         String splitCSVBy = ",";
         String currentLine;
 

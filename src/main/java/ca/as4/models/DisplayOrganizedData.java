@@ -121,6 +121,48 @@ public class DisplayOrganizedData {
             }
         }
 
+        perClassCalculations(currentList, j, enrollments, components);
+    }
+
+    private void printCourseOfferings(ArrayList<String> instructors, int[] enrollments, boolean[] components,
+                                      int currentSem, String currentLoc, ArrayList<Data> currentList) {
+        System.out.println("\t" + currentSem + " in " + currentLoc + " by " +
+                instructors.toString()
+                        .replace("[", "")
+                        .replace("]", "")
+                        .replace("  ", " ")
+                        .trim());
+
+        ArrayList<String> allOfferrings = new ArrayList<>();
+        displayFormatter(enrollments, components, currentList, allOfferrings);
+        Collections.sort(allOfferrings);
+
+        for (String currentString : allOfferrings) {
+            System.out.println(currentString);
+        }
+
+        allOfferrings.clear();
+        instructors.clear();
+    }
+
+    private void setEnrollmentArr(int[] enrollments, boolean[] components, int i, int j,
+                                  int indexList, ArrayList<Data> currentList, boolean reset)
+    {
+        if (reset)
+        {
+            enrollments[i] = 0;
+            enrollments[j] = 0;
+            components[i] = false;
+        }
+        else
+        {
+            enrollments[i] += currentList.get(indexList).getEnrollmentTotal();
+            enrollments[j] += currentList.get(indexList).getEnrollmentCapacity();
+            components[i] = true;
+        }
+    }
+
+    private void perClassCalculations(ArrayList<Data> currentList, int j, int[] enrollments, boolean[] components) {
         switch (currentList.get(j).getComponentCode()) {
 
             case "LAB":
@@ -186,37 +228,9 @@ public class DisplayOrganizedData {
             default:
                 setEnrollmentArr(enrollments, components, 14, 29, j, currentList, false);
         }
-
     }
 
-    private void setEnrollmentArr(int[] enrollments, boolean[] components, int i, int j,
-                                  int indexList, ArrayList<Data> currentList, boolean reset)
-    {
-        if (reset)
-        {
-            enrollments[i] = 0;
-            enrollments[j] = 0;
-            components[i] = false;
-        }
-        else
-        {
-            enrollments[i] += currentList.get(indexList).getEnrollmentTotal();
-            enrollments[j] += currentList.get(indexList).getEnrollmentCapacity();
-            components[i] = true;
-        }
-    }
-
-    private void printCourseOfferings(ArrayList<String> instructors, int[] enrollments, boolean[] components,
-                                      int currentSem, String currentLoc, ArrayList<Data> currentList) {
-        System.out.println("\t" + currentSem + " in " + currentLoc + " by " +
-                instructors.toString()
-                        .replace("[", "")
-                        .replace("]", "")
-                        .replace("  ", " ")
-                        .trim());
-
-        ArrayList<String> allOfferrings = new ArrayList<>();
-
+    private void displayFormatter(int[] enrollments, boolean[] components, ArrayList<Data> currentList, ArrayList<String> allOfferrings) {
         if (components[0]) {
             allOfferrings.add("\t\t" + "Type=LAB, Enrollment=" + enrollments[0] +
                     "/" + enrollments[15]);
@@ -321,18 +335,9 @@ public class DisplayOrganizedData {
 
             setEnrollmentArr(enrollments, components, 14, 29, 0, currentList, true);
         }
-
-        Collections.sort(allOfferrings);
-
-        for (String currentString : allOfferrings) {
-            System.out.println(currentString);
-        }
-
-        allOfferrings.clear();
-        instructors.clear();
     }
 
-    // Debug: Display all instructors
+    // Debug: Display the class data in their grouped order
     private String displayAllInstructors(Data classFileWithInstructors)
     {
         ArrayList<String> instructors = classFileWithInstructors.getInstructors();
@@ -354,7 +359,7 @@ public class DisplayOrganizedData {
         return sb.toString();
     }
 
-    // Debug: Display the class data in their grouped order
+    // Debug: Display all instructors
     public void displayClassData(ArrayList<Data>[] allSortedClasses)
     {
         System.out.println();

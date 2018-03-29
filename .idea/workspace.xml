@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="964b4201-a0c3-45d5-8ace-3827cf810519" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.bin" afterPath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.bin" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.lock" afterPath="$PROJECT_DIR$/.gradle/4.6/fileHashes/fileHashes.lock" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/out/production/classes/ca/as4/models/DisplayOrganizedData.class" afterPath="$PROJECT_DIR$/out/production/classes/ca/as4/models/DisplayOrganizedData.class" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ca/as4/controllers/DataInputController.java" afterPath="$PROJECT_DIR$/src/main/java/ca/as4/controllers/DataInputController.java" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ca/as4/models/DisplayOrganizedData.java" afterPath="$PROJECT_DIR$/src/main/java/ca/as4/models/DisplayOrganizedData.java" />
     </list>
     <ignored path="$PROJECT_DIR$/.gradle/" />
@@ -47,11 +45,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DataInputController.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="DataInputController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/ca/as4/controllers/DataInputController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="205">
-              <caret line="41" column="47" lean-forward="false" selection-start-line="41" selection-start-column="47" selection-end-line="41" selection-end-column="47" />
+            <state relative-caret-position="113">
+              <caret line="40" column="5" lean-forward="true" selection-start-line="40" selection-start-column="5" selection-end-line="40" selection-end-column="5" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -59,13 +57,18 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DisplayOrganizedData.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="DisplayOrganizedData.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/ca/as4/models/DisplayOrganizedData.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4950">
-              <caret line="330" column="30" lean-forward="true" selection-start-line="330" selection-start-column="30" selection-end-line="330" selection-end-column="30" />
+            <state relative-caret-position="779">
+              <caret line="339" column="4" lean-forward="false" selection-start-line="339" selection-start-column="4" selection-end-line="339" selection-end-column="4" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="method#setEnrollmentArr#0;class#DisplayOrganizedData#0" expanded="false" />
+                <element signature="method#perClassCalculations#0;class#DisplayOrganizedData#0" expanded="false" />
+                <element signature="method#displayFormatter#0;class#DisplayOrganizedData#0" expanded="false" />
+                <element signature="method#displayAllInstructors#0;class#DisplayOrganizedData#0" expanded="false" />
+                <element signature="method#displayClassData#0;class#DisplayOrganizedData#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -514,34 +517,38 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="A5" type="b2602c69:ProjectViewProjectNode" />
-              <item name="A5" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="A5" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="A5" type="b2602c69:ProjectViewProjectNode" />
-              <item name="A5" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="A5" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="A5" type="b2602c69:ProjectViewProjectNode" />
-              <item name="A5" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="A5" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
             </path>
             <path>
               <item name="A5" type="b2602c69:ProjectViewProjectNode" />
-              <item name="A5" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="A5" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="A5" type="b2602c69:ProjectViewProjectNode" />
-              <item name="A5" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="A5" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
@@ -549,7 +556,7 @@
             </path>
             <path>
               <item name="A5" type="b2602c69:ProjectViewProjectNode" />
-              <item name="A5" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="A5" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
@@ -558,7 +565,7 @@
             </path>
             <path>
               <item name="A5" type="b2602c69:ProjectViewProjectNode" />
-              <item name="A5" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="A5" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
@@ -569,10 +576,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="AndroidView" />
-      <pane id="Scratches" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -732,12 +735,13 @@
       <workItem from="1522274620053" duration="3240000" />
       <workItem from="1522279665026" duration="2851000" />
       <workItem from="1522293108645" duration="6279000" />
-      <workItem from="1522338472198" duration="574000" />
+      <workItem from="1522338472198" duration="897000" />
+      <workItem from="1522341575708" duration="1629000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="18604000" />
+    <option name="totallyTimeSpent" value="20556000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -756,7 +760,6 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963374" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -769,10 +772,10 @@
       <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.82190263" sideWeight="0.49213162" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5" sideWeight="0.49213162" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Spring" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32964602" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.43030974" sideWeight="0.49499285" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21307072" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21665175" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -782,6 +785,7 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963374" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
@@ -826,6 +830,11 @@
           <caret line="0" column="22" lean-forward="false" selection-start-line="0" selection-start-column="22" selection-end-line="0" selection-end-column="22" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#setEnrollmentArr#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#perClassCalculations#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayFormatter#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayAllInstructors#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayClassData#0;class#DisplayOrganizedData#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -870,6 +879,11 @@
           <caret line="0" column="22" lean-forward="true" selection-start-line="0" selection-start-column="22" selection-end-line="0" selection-end-column="22" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#setEnrollmentArr#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#perClassCalculations#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayFormatter#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayAllInstructors#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayClassData#0;class#DisplayOrganizedData#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -943,6 +957,11 @@
           <caret line="0" column="22" lean-forward="false" selection-start-line="0" selection-start-column="22" selection-end-line="0" selection-end-column="22" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#setEnrollmentArr#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#perClassCalculations#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayFormatter#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayAllInstructors#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayClassData#0;class#DisplayOrganizedData#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1013,6 +1032,11 @@
           <caret line="0" column="22" lean-forward="false" selection-start-line="0" selection-start-column="22" selection-end-line="0" selection-end-column="22" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#setEnrollmentArr#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#perClassCalculations#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayFormatter#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayAllInstructors#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayClassData#0;class#DisplayOrganizedData#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1065,6 +1089,11 @@
           <caret line="0" column="22" lean-forward="false" selection-start-line="0" selection-start-column="22" selection-end-line="0" selection-end-column="22" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#setEnrollmentArr#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#perClassCalculations#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayFormatter#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayAllInstructors#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayClassData#0;class#DisplayOrganizedData#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1109,6 +1138,11 @@
           <caret line="0" column="22" lean-forward="true" selection-start-line="0" selection-start-column="22" selection-end-line="0" selection-end-column="22" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#setEnrollmentArr#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#perClassCalculations#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayFormatter#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayAllInstructors#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayClassData#0;class#DisplayOrganizedData#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1202,22 +1236,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ca/as4/models/DisplayOrganizedData.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/ca/as4/controllers/DataInputController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4950">
-          <caret line="330" column="30" lean-forward="true" selection-start-line="330" selection-start-column="30" selection-end-line="330" selection-end-column="30" />
+        <state relative-caret-position="113">
+          <caret line="40" column="5" lean-forward="true" selection-start-line="40" selection-start-column="5" selection-end-line="40" selection-end-column="5" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ca/as4/controllers/DataInputController.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/ca/as4/models/DisplayOrganizedData.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="205">
-          <caret line="41" column="47" lean-forward="false" selection-start-line="41" selection-start-column="47" selection-end-line="41" selection-end-column="47" />
+        <state relative-caret-position="779">
+          <caret line="339" column="4" lean-forward="false" selection-start-line="339" selection-start-column="4" selection-end-line="339" selection-end-column="4" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#setEnrollmentArr#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#perClassCalculations#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayFormatter#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayAllInstructors#0;class#DisplayOrganizedData#0" expanded="false" />
+            <element signature="method#displayClassData#0;class#DisplayOrganizedData#0" expanded="false" />
           </folding>
         </state>
       </provider>
