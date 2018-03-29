@@ -1,6 +1,7 @@
 package ca.as4.models;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class DisplayOrganizedData {
     public DisplayOrganizedData() { }
@@ -43,34 +44,9 @@ public class DisplayOrganizedData {
 
                 if (currentList.size() == 1)
                 {
-
-                    ArrayList<String> currentInstructors =  currentList.get(0).getInstructors();
-                    for (String currentInstructor : currentInstructors)
-                    {
-                        if (!(instructors.contains(currentInstructor)))
-                        {
-                            instructors.add(currentInstructor);
-                        }
-                    }
-
-                    String listInstructors = instructors.toString();
-                    listInstructors = listInstructors.replace("[", "");
-                    listInstructors = listInstructors.replace("]", "");
-                    listInstructors = listInstructors.trim();
-
-                    if (listInstructors.contains("<null>"))
-                    {
-                        listInstructors = listInstructors.replace("<null>", "");
-                    }
-
-                    System.out.println("\t" + currentList.get(0).getSemester()+ " in "
-                            + currentList.get(0).getLocation() + " by " + listInstructors);
-
-
-                    System.out.println("\t\t" + "Type=" + currentList.get(0).getComponentCode()
-                            + ", Enrollment=" + currentList.get(0).getEnrollmentTotal()
-                            + "/" + currentList.get(0).getEnrollmentCapacity());
-
+                    calculateCourseOfferings(currentList, 0, instructors, enrollments, components);
+                    printCourseOfferings(instructors, enrollments, components, currentList.get(0).getSemester(),
+                            currentList.get(0).getLocation(), currentList);
                 }
 
                 for (int j = 0; j < currentList.size() - 1; j++)
@@ -137,6 +113,8 @@ public class DisplayOrganizedData {
         // grab all the instructors in a class' semester's location
         // add those to our list who are not already in it
         ArrayList<String> currentInstructors =  currentList.get(j).getInstructors();
+        currentInstructors.removeAll(Collections.singleton("<null>"));
+        currentInstructors.removeAll(Collections.singleton("(null)"));
         for (String currentInstructor : currentInstructors) {
             if (!(instructors.contains(currentInstructor))) {
                 instructors.add(currentInstructor);
@@ -234,7 +212,6 @@ public class DisplayOrganizedData {
                 instructors.toString()
                         .replace("[", "")
                         .replace("]", "")
-                        .replace("<null>", "")
                         .replace("  ", " ")
                         .trim());
 
