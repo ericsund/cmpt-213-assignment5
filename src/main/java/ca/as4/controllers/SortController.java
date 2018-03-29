@@ -32,13 +32,8 @@ public class SortController {
 
         numClassesInList = counter;
 
-        System.out.print(numClassesInList + " " + organizeClasses.length + " " + allData.size());
-
         ArrayList<Data>[] fixedListClasses = fixArrayListSize(organizeClasses);
         sortEachArrayList(fixedListClasses);
-//        displayClassData(fixedListClasses);
-//        printDump(fixedListClasses);
-
         return fixedListClasses;
     }
 

@@ -34,6 +34,7 @@ public class DataInputController {
         buildArrayList(organizeClasses);
         ArrayList<Data>[] allSortedClasses = sorter.sortDataByClassName(organizeClasses, allData);
         display.printDump(allSortedClasses);
+//        display.displayClassData(allSortedClasses);
     }
 
     private void retrieveCSVData()
@@ -165,6 +166,8 @@ public class DataInputController {
     private String fixStrings(String changedStr)
     {
         String stringToFix = changedStr;
+        stringToFix = stringToFix.replace("(", "<")
+                .replace(")", ">");
 
         for (int i = 0; i < stringToFix.length()-1; i++)
         {
@@ -183,9 +186,5 @@ public class DataInputController {
         {
             organizeByClass[i] = new ArrayList<>();
         }
-    }
-
-    public int getNumLists() {
-        return numLists;
     }
 }
