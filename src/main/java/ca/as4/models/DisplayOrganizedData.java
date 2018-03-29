@@ -215,91 +215,93 @@ public class DisplayOrganizedData {
                         .replace("  ", " ")
                         .trim());
 
+        ArrayList<String> allOfferrings = new ArrayList<>();
+
         if (components[0]) {
-            System.out.println("\t\t" + "Type=LAB, Enrollment=" + enrollments[0] +
+            allOfferrings.add("\t\t" + "Type=LAB, Enrollment=" + enrollments[0] +
                     "/" + enrollments[15]);
 
             setEnrollmentArr(enrollments, components, 0, 15, 0, currentList, true);
         }
 
         if (components[1]) {
-            System.out.println("\t\t" + "Type=OPL, Enrollment=" + enrollments[1] +
+            allOfferrings.add("\t\t" + "Type=OPL, Enrollment=" + enrollments[1] +
                     "/" + enrollments[16]);
 
             setEnrollmentArr(enrollments, components, 1, 16, 0, currentList, true);
         }
 
         if (components[2]) {
-            System.out.println("\t\t" + "Type=TUT, Enrollment=" + enrollments[2] +
+            allOfferrings.add("\t\t" + "Type=TUT, Enrollment=" + enrollments[2] +
                     "/" + enrollments[17]);
 
             setEnrollmentArr(enrollments, components, 2, 17, 0, currentList, true);
         }
 
         if (components[3]) {
-            System.out.println("\t\t" + "Type=WKS, Enrollment=" + enrollments[3] +
+            allOfferrings.add("\t\t" + "Type=WKS, Enrollment=" + enrollments[3] +
                     "/" + enrollments[18]);
 
             setEnrollmentArr(enrollments, components, 3, 18, 0, currentList, true);
         }
 
         if (components[4]) {
-            System.out.println("\t\t" + "Type=FLD, Enrollment=" + enrollments[4] +
+            allOfferrings.add("\t\t" + "Type=FLD, Enrollment=" + enrollments[4] +
                     "/" + enrollments[19]);
 
             setEnrollmentArr(enrollments, components, 4, 19, 0, currentList, true);
         }
         if (components[5]) {
-            System.out.println("\t\t" + "Type=SEC, Enrollment=" + enrollments[5] +
+            allOfferrings.add("\t\t" + "Type=SEC, Enrollment=" + enrollments[5] +
                     "/" + enrollments[20]);
 
             setEnrollmentArr(enrollments, components, 5, 20, 0, currentList, true);
         }
 
         if (components[6]) {
-            System.out.println("\t\t" + "Type=STD, Enrollment=" + enrollments[6] +
+            allOfferrings.add("\t\t" + "Type=STD, Enrollment=" + enrollments[6] +
                     "/" + enrollments[21]);
 
             setEnrollmentArr(enrollments, components, 6, 21, 0, currentList, true);
         }
 
         if (components[7]) {
-            System.out.println("\t\t" + "Type=OLC, Enrollment=" + enrollments[7] +
+            allOfferrings.add("\t\t" + "Type=OLC, Enrollment=" + enrollments[7] +
                     "/" + enrollments[22]);
 
             setEnrollmentArr(enrollments, components, 7, 22, 0, currentList, true);
         }
 
         if (components[8]) {
-            System.out.println("\t\t" + "Type=STL, Enrollment=" + enrollments[8] +
+            allOfferrings.add("\t\t" + "Type=STL, Enrollment=" + enrollments[8] +
                     "/" + enrollments[23]);
 
             setEnrollmentArr(enrollments, components, 8, 23, 0, currentList, true);
         }
 
         if (components[9]) {
-            System.out.println("\t\t" + "Type=RQL, Enrollment=" + enrollments[9] +
+            allOfferrings.add("\t\t" + "Type=RQL, Enrollment=" + enrollments[9] +
                     "/" + enrollments[24]);
 
             setEnrollmentArr(enrollments, components, 9, 24, 0, currentList, true);
         }
 
         if (components[10]) {
-            System.out.println("\t\t" + "Type=SEM, Enrollment=" + enrollments[10] +
+            allOfferrings.add("\t\t" + "Type=SEM, Enrollment=" + enrollments[10] +
                     "/" + enrollments[25]);
 
             setEnrollmentArr(enrollments, components, 10, 25, 0, currentList, true);
         }
 
         if (components[11]) {
-            System.out.println("\t\t" + "Type=PRA, Enrollment=" + enrollments[11] +
+            allOfferrings.add("\t\t" + "Type=PRA, Enrollment=" + enrollments[11] +
                     "/" + enrollments[26]);
 
             setEnrollmentArr(enrollments, components, 11, 26, 0, currentList, true);
         }
 
         if (components[12]) {
-            System.out.println("\t\t" + "Type=PRA, Enrollment=" + enrollments[12] +
+            allOfferrings.add("\t\t" + "Type=PRA, Enrollment=" + enrollments[12] +
                     "/" + enrollments[27]);
 
             setEnrollmentArr(enrollments, components, 11, 27, 0, currentList, true);
@@ -307,19 +309,26 @@ public class DisplayOrganizedData {
 
         if (components[13])
         {
-            System.out.println("\t\t" + "Type=CNV, Enrollment=" + enrollments[13] +
+            allOfferrings.add("\t\t" + "Type=CNV, Enrollment=" + enrollments[13] +
                     "/" + enrollments[28]);
 
             setEnrollmentArr(enrollments, components, 13, 28, 0, currentList, true);
         }
 
         if (components[14]) {
-            System.out.println("\t\t" + "Type=LEC, Enrollment=" + enrollments[14] +
+            allOfferrings.add("\t\t" + "Type=LEC, Enrollment=" + enrollments[14] +
                     "/" + enrollments[29]);
 
             setEnrollmentArr(enrollments, components, 14, 29, 0, currentList, true);
         }
 
+        Collections.sort(allOfferrings);
+
+        for (String currentString : allOfferrings) {
+            System.out.println(currentString);
+        }
+
+        allOfferrings.clear();
         instructors.clear();
     }
 
