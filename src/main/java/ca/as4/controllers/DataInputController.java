@@ -2,6 +2,8 @@ package ca.as4.controllers;
 
 import ca.as4.models.Data;
 import ca.as4.models.DisplayOrganizedData;
+import ca.as4.models.AboutResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
@@ -9,8 +11,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import static java.lang.System.exit;
 
 @RestController
 public class DataInputController {
@@ -25,6 +25,16 @@ public class DataInputController {
                                   "LOCATION", "ENROLMENTCAPACITY", "ENROLMENTTOTAL",
                                   "INSTRUCTORS", "COMPONENTCODE"};
 
+    @ResponseStatus(HttpStatus.CREATED)
+    @GetMapping("/api/about")
+    public AboutResponse getAbout()
+    {
+        AboutResponse response = new AboutResponse();
+        response.setAppName("a snazzy SFU course planner");
+        response.setAuthorName("Eric Sund and Sukhdeep Parmar!");
+        return response;
+    }
+
     @GetMapping("/dump-model")
     public void dumpModel()
     {
@@ -35,7 +45,6 @@ public class DataInputController {
         buildArrayList(organizeClasses);
         ArrayList<Data>[] allSortedClasses = sorter.sortDataByClassName(organizeClasses, allData);
         display.printDump(allSortedClasses);
-//        display.displayClassData(allSortedClasses);
     }
 
     private void retrieveCSVData()
