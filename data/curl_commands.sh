@@ -30,6 +30,8 @@ OFFERING=7063  # Brian's 2018 offering
 curl -i -s -H "Content-Type: application/json" \
     -X GET ${SERVER}/api/departments
 
+#curl -i -s -H "Content-Type: application/json" -X GET localhost:8080/api/departments
+
 # Get courses of CMPT
 curl -i -s -H "Content-Type: application/json" \
     -X GET ${SERVER}/api/departments/${DEPT}/courses

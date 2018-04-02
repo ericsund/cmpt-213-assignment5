@@ -1,6 +1,7 @@
 package ca.as4.controllers;
 
 import ca.as4.models.Data;
+import ca.as4.models.Department;
 import ca.as4.models.DisplayOrganizedData;
 import ca.as4.models.AboutResponse;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class DataInputController {
@@ -18,9 +20,12 @@ public class DataInputController {
     private SortController sorter = new SortController();
     private ArrayList<String[]> csvData = new ArrayList<>();
     private ArrayList<Data> allData = new ArrayList<>();
-    private ArrayList<ArrayList<Data>> allSortedClasses = new ArrayList<>();
-    private int numLists = 0;
 
+    private ArrayList<ArrayList<Data>> allSortedClasses = new ArrayList<>();
+    private ArrayList<Department> departments = new ArrayList<>();
+
+    private int numLists = 0;
+    private AtomicLong nextDepartmentId = new AtomicLong();
 
     private String[] topCSVRow = {"SEMESTER", "SUBJECT", "CATALOGNUMBER",
                                   "LOCATION", "ENROLMENTCAPACITY", "ENROLMENTTOTAL",
@@ -38,21 +43,66 @@ public class DataInputController {
     @GetMapping("/api/dump-model")
     public void dumpModel()
     {
-        retrieveCSVData();
-        populateDataModel();
+        fetchData(); // fetch data if we haven't already
 
-        ArrayList<ArrayList<Data>> organizeClasses = new ArrayList<>();
-        allSortedClasses = sorter.sortDataByClassName(organizeClasses, allData);
         display.printDump(allSortedClasses);
-//        display.displayClassData(allSortedClasses);
     }
 
     @GetMapping("/api/departments")
-    public void getDepartments()
+    public ArrayList<Department> getDepartments()
     {
+        fetchData(); // fetch data if we haven't already
+
+        // todo there might be a faster way to do this???
+        // grab all departments, create objects out of them, add them to ArrayList, return it
+        for (ArrayList<Data> currentDataSet : allSortedClasses)
+        {
+            if (!(currentDataSet.isEmpty())) {
+                String currentDepartment = currentDataSet.get(0).getSubject();
+
+                // make sure not to add duplicates
+                if (currentDepartment.equals(getLastDepartment())) { continue; }
+
+                Department newDepartment = new Department();
+                newDepartment.setDeptId(nextDepartmentId.incrementAndGet());
+                newDepartment.setName(currentDepartment);
+
+                departments.add(newDepartment);
+            }
+        }
+
+        return departments;
 
     }
 
+    private String getLastDepartment()
+    {
+        String lastDepartment;
+
+        if (departments.size() > 0)
+        {
+            int lastDepartmentIndex = departments.size() - 1;
+            lastDepartment = departments.get(lastDepartmentIndex).getName();
+        }
+        else
+        {
+            lastDepartment = "";
+        }
+
+        return lastDepartment;
+    }
+
+    // run this minimally to avoid reading and re-sorting data
+    private void fetchData()
+    {
+        if (allSortedClasses.isEmpty()) {
+            retrieveCSVData();
+            populateDataModel();
+
+            ArrayList<ArrayList<Data>> organizeClasses = new ArrayList<>();
+            allSortedClasses = sorter.sortDataByClassName(organizeClasses, allData);
+        }
+    }
 
     private void retrieveCSVData()
     {

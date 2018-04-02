@@ -1,7 +1,7 @@
 package ca.as4.models;
 
 /*
-Class to create an object that are returned on the /api/about endpoint
+Class to create an object that is returned on the /api/about endpoint
 */
 public class AboutResponse {
 

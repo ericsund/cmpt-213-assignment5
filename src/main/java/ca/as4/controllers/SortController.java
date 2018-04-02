@@ -2,10 +2,10 @@ package ca.as4.controllers;
 
 import ca.as4.models.Data;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
+// todo this class might have to be moved into a model in an effort to keep logic away from controllers???
 public class SortController {
     private int numClassesInList = 0;
 
