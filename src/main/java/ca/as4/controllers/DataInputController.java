@@ -1,9 +1,6 @@
 package ca.as4.controllers;
 
-import ca.as4.models.Data;
-import ca.as4.models.Department;
-import ca.as4.models.DisplayOrganizedData;
-import ca.as4.models.AboutResponse;
+import ca.as4.models.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +23,7 @@ public class DataInputController {
 
     private int numLists = 0;
     private AtomicLong nextDepartmentId = new AtomicLong();
+    private AtomicLong nextCourseId = new AtomicLong();
 
     private String[] topCSVRow = {"SEMESTER", "SUBJECT", "CATALOGNUMBER",
                                   "LOCATION", "ENROLMENTCAPACITY", "ENROLMENTTOTAL",
@@ -52,26 +50,37 @@ public class DataInputController {
     public ArrayList<Department> getDepartments()
     {
         fetchData(); // fetch data if we haven't already
+        structureData(); // structure data if we haven't already
+        return departments;
+    }
 
-        // todo there might be a faster way to do this???
-        // grab all departments, create objects out of them, add them to ArrayList, return it
-        for (ArrayList<Data> currentDataSet : allSortedClasses)
+    @GetMapping("/api/departments/{id}/courses")
+    public ArrayList<Course> getCourses(@PathVariable("id") long id)
+    {
+        fetchData(); // fetch data if we haven't already
+        structureData(); // structure data if we haven't already
+
+        // quit if id is out of range
+        if (!(id <= departments.size() && id > 0))
         {
-            if (!(currentDataSet.isEmpty())) {
-                String currentDepartment = currentDataSet.get(0).getSubject();
+            throw new NotFound("Department for id " + id + " is out of range.");
+        }
 
-                // make sure not to add duplicates
-                if (currentDepartment.equals(getLastDepartment())) { continue; }
-
-                Department newDepartment = new Department();
-                newDepartment.setDeptId(nextDepartmentId.incrementAndGet());
-                newDepartment.setName(currentDepartment);
-
-                departments.add(newDepartment);
+        // search for department and return its courses
+        for (Department department : departments)
+        {
+            if (department.getDeptId() == id)
+            {
+                if (department.getCourses().size() == 0)
+                {
+                    throw new NotFound("The for id " + id + " has no courses.");
+                }
+                return department.getCourses();
             }
         }
 
-        return departments;
+        // searched all departments but didn't find the id
+        throw new NotFound("The id " + id + " was not found.");
 
     }
 
@@ -92,15 +101,63 @@ public class DataInputController {
         return lastDepartment;
     }
 
-    // run this minimally to avoid reading and re-sorting data
+    // retrieve and sort csv data if we haven't already
     private void fetchData()
     {
-        if (allSortedClasses.isEmpty()) {
+        if (allSortedClasses.isEmpty())
+        {
             retrieveCSVData();
             populateDataModel();
 
             ArrayList<ArrayList<Data>> organizeClasses = new ArrayList<>();
             allSortedClasses = sorter.sortDataByClassName(organizeClasses, allData);
+        }
+    }
+
+    // structure organized data if we haven't already
+    private void structureData()
+    {
+        if (departments.isEmpty()) {
+            // todo there might be a faster way to do this???
+            for (ArrayList<Data> currentDataSet : allSortedClasses)
+            {
+                if (!(currentDataSet.isEmpty())) {
+                    String currentDepartment = currentDataSet.get(0).getSubject();
+
+                    // make sure not to add duplicates
+                    // current department different from last
+                    if (!(currentDepartment.equals( getLastDepartment() )))
+                    {
+                        Department newDepartment = new Department();
+                        newDepartment.setDeptId(nextDepartmentId.incrementAndGet());
+                        newDepartment.setName(currentDepartment);
+
+                        // add all courses in this department
+                        for (Data currentCourse : currentDataSet) {
+                            Course newCourse = new Course();
+                            newCourse.setCourseId(nextCourseId.incrementAndGet());
+                            newCourse.setCatalogNumber(currentCourse.getCatalogNumber());
+                            newDepartment.setCourses(newCourse);
+                        }
+                        departments.add(newDepartment);
+                    }
+                    // current department same from last
+                    else
+                    {
+                        // add all courses in this department
+                        for (Data currentCourse : currentDataSet) {
+                            Course newCourse = new Course();
+                            newCourse.setCourseId(nextCourseId.incrementAndGet());
+                            newCourse.setCatalogNumber(currentCourse.getCatalogNumber());
+
+                            Department tempDepartment = departments.get(departments.size() - 1);
+                            tempDepartment.setCourses(newCourse);
+                            departments.remove(departments.size() - 1);
+                            departments.add(tempDepartment);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -274,6 +331,13 @@ public class DataInputController {
     {
         private BadRequest(String message)
         {
+            super(message);
+        }
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private class NotFound extends RuntimeException {
+        private NotFound(String message) {
             super(message);
         }
     }

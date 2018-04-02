@@ -36,6 +36,8 @@ curl -i -s -H "Content-Type: application/json" \
 curl -i -s -H "Content-Type: application/json" \
     -X GET ${SERVER}/api/departments/${DEPT}/courses
 
+#curl -i -s -H "Content-Type: application/json" -X GET localhost:8080/api/departments/3/courses
+
 # Get sections of course
 curl -i -s -H "Content-Type: application/json" \
     -X GET ${SERVER}/api/departments/${DEPT}/courses/${COURSE}/offerings
