@@ -13,6 +13,8 @@ curl -i -s -H "Content-Type: application/json" \
 curl -i -s -H "Content-Type: application/json" \
     -X GET ${SERVER}/api/dump-model
 
+#curl -i -s -H "Content-Type: application/json" -X GET localhost:8080/api/dump-model
+
 #################################################
 #   Data Access
 #################################################

@@ -25,7 +25,6 @@ public class DataInputController {
                                   "LOCATION", "ENROLMENTCAPACITY", "ENROLMENTTOTAL",
                                   "INSTRUCTORS", "COMPONENTCODE"};
 
-    @ResponseStatus(HttpStatus.CREATED)
     @GetMapping("/api/about")
     public AboutResponse getAbout()
     {
@@ -35,7 +34,7 @@ public class DataInputController {
         return response;
     }
 
-    @GetMapping("/dump-model")
+    @GetMapping("/api/dump-model")
     public void dumpModel()
     {
         retrieveCSVData();
@@ -49,7 +48,7 @@ public class DataInputController {
 
     private void retrieveCSVData()
     {
-        String CSVFile = "data/course_data_218.csv";
+        String CSVFile = "data/course_data_2018.csv";
         String splitCSVBy = ",";
         String currentLine;
 
