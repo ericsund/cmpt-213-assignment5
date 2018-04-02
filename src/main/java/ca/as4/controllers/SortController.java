@@ -11,7 +11,7 @@ public class SortController {
 
     public SortController() { }
 
-    public ArrayList<Data>[] sortDataByClassName(ArrayList<Data>[] organizeClasses, ArrayList<Data> allData)
+    public ArrayList<ArrayList<Data>> sortDataByClassName(ArrayList<ArrayList<Data>> organizeClasses, ArrayList<Data> allData)
     {
         int counter = 0;
         for (int i = 0; i < allData.size(); i++)
@@ -24,7 +24,9 @@ public class SortController {
 
             if (!inOrganizedClass && isComponentCodeAClass)
             {
-                organizeClasses[counter].add(allData.get(i));
+                ArrayList<Data> currentDataArr = new ArrayList<>();
+                currentDataArr.add(allData.get(i));
+                organizeClasses.add(currentDataArr);
                 findAndInsertRelatedData(allData, organizeClasses, allData.get(i), counter);
                 counter++;
             }
@@ -32,27 +34,16 @@ public class SortController {
 
         numClassesInList = counter;
 
-        ArrayList<Data>[] fixedListClasses = fixArrayListSize(organizeClasses);
-        sortEachArrayList(fixedListClasses);
-        return fixedListClasses;
+        sortEachArrayList(organizeClasses);
+        return organizeClasses;
     }
 
-    private ArrayList<Data>[] fixArrayListSize(ArrayList<Data>[] organizedClasses)
-    {
-        ArrayList<Data>[] fixedArr = new ArrayList[numClassesInList];
-        for (int i = 0; i < numClassesInList; i++)
-        {
-            fixedArr[i] = new ArrayList<>();
-            fixedArr[i] = organizedClasses[i];
-        }
-        return fixedArr;
-    }
 
-    private boolean checkInOrganizedClass(Data checkData, ArrayList<Data>[] organizeClasses)
+    private boolean checkInOrganizedClass(Data checkData, ArrayList<ArrayList<Data>> organizeClasses)
     {
-        for (int i = 0; i < organizeClasses.length; i++)
+        for (int i = 0; i < organizeClasses.size(); i++)
         {
-            if (organizeClasses[i].contains(checkData))
+            if (organizeClasses.get(i).contains(checkData))
             {
                 return true;
             }
@@ -60,11 +51,11 @@ public class SortController {
         return false;
     }
 
-    private void sortEachArrayList(ArrayList<Data>[] organizeClasses)
+    private void sortEachArrayList(ArrayList<ArrayList<Data>> organizeClasses)
     {
-        for (int i = 0; i < organizeClasses.length; i++)
+        for (int i = 0; i < organizeClasses.size(); i++)
         {
-            Collections.sort(organizeClasses[i], new Comparator<Data>() {
+            Collections.sort(organizeClasses.get(i), new Comparator<Data>() {
                 @Override
                 public int compare(Data o1, Data o2) {
                     return o1.getSemester() - o2.getSemester();
@@ -72,7 +63,7 @@ public class SortController {
             });
         }
 
-        Arrays.sort(organizeClasses, new Comparator<ArrayList<Data>>() {
+        Collections.sort(organizeClasses, new Comparator<ArrayList<Data>>() {
             @Override
             public int compare(ArrayList<Data> o1, ArrayList<Data> o2) {
                 String o1Class = o1.get(0).getSubject() + " " + o1.get(0).getCatalogNumber();
@@ -82,7 +73,7 @@ public class SortController {
         });
     }
 
-    private void findAndInsertRelatedData(ArrayList<Data> allData, ArrayList<Data>[] organizeClasses, Data compareData, int counter)
+    private void findAndInsertRelatedData(ArrayList<Data> allData, ArrayList<ArrayList<Data>> organizeClasses, Data compareData, int counter)
     {
         ArrayList<Data> otherCampus = new ArrayList<>();
         int indexLecOfOtherCampus = 0;
@@ -109,7 +100,7 @@ public class SortController {
                     }
                     else
                     {
-                        organizeClasses[counter].add(currentFile);
+                        organizeClasses.get(counter).add(currentFile);
                     }
                 }
             }
@@ -117,12 +108,12 @@ public class SortController {
 
         if (otherCampusDataPresent)
         {
-            organizeClasses[counter].add(otherCampus.get(indexLecOfOtherCampus));
+            organizeClasses.get(counter).add(otherCampus.get(indexLecOfOtherCampus));
             for (int i = 0; i < otherCampus.size(); i++)
             {
                 if (i != indexLecOfOtherCampus)
                 {
-                    organizeClasses[counter].add(otherCampus.get(i));
+                    organizeClasses.get(counter).add(otherCampus.get(i));
                 }
             }
         }

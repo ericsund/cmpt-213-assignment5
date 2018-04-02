@@ -6,7 +6,7 @@ import java.util.Collections;
 public class DisplayOrganizedData {
     public DisplayOrganizedData() { }
 
-    public void printDump(ArrayList<Data>[] organizedData) {
+    public void printDump(ArrayList<ArrayList<Data>> organizedData) {
 
         System.out.println();
         for (ArrayList<Data> currentList : organizedData) {

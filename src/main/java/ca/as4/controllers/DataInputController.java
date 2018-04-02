@@ -18,6 +18,7 @@ public class DataInputController {
     private SortController sorter = new SortController();
     private ArrayList<String[]> csvData = new ArrayList<>();
     private ArrayList<Data> allData = new ArrayList<>();
+    private ArrayList<ArrayList<Data>> allSortedClasses = new ArrayList<>();
     private int numLists = 0;
 
 
@@ -30,7 +31,7 @@ public class DataInputController {
     {
         AboutResponse response = new AboutResponse();
         response.setAppName("a snazzy SFU course planner");
-        response.setAuthorName("Eric Sund and Sukhdeep Parmar!");
+        response.setAuthorName("Eric Sund and Sukhdeep Parmar");
         return response;
     }
 
@@ -40,11 +41,18 @@ public class DataInputController {
         retrieveCSVData();
         populateDataModel();
 
-        ArrayList<Data>[] organizeClasses = new ArrayList[numLists];
-        buildArrayList(organizeClasses);
-        ArrayList<Data>[] allSortedClasses = sorter.sortDataByClassName(organizeClasses, allData);
+        ArrayList<ArrayList<Data>> organizeClasses = new ArrayList<>();
+        allSortedClasses = sorter.sortDataByClassName(organizeClasses, allData);
         display.printDump(allSortedClasses);
+//        display.displayClassData(allSortedClasses);
     }
+
+    @GetMapping("/api/departments")
+    public void getDepartments()
+    {
+
+    }
+
 
     private void retrieveCSVData()
     {
@@ -202,11 +210,21 @@ public class DataInputController {
         return stringToFix;
     }
 
-    private void buildArrayList(ArrayList<Data>[] organizeByClass)
+//    private void buildArrayList(ArrayList<Data>[] organizeByClass)
+//    {
+//        for (int i = 0; i < numLists; i++)
+//        {
+//            organizeByClass[i] = new ArrayList<>();
+//        }
+//    }
+
+    // Exceptions
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    private class BadRequest extends RuntimeException
     {
-        for (int i = 0; i < numLists; i++)
+        private BadRequest(String message)
         {
-            organizeByClass[i] = new ArrayList<>();
+            super(message);
         }
     }
 }
