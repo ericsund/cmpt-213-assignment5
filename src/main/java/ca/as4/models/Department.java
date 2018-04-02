@@ -40,4 +40,23 @@ public class Department {
     public ArrayList<Course> getCourses() {
         return courses;
     }
+
+    public Course getLastCourse() {
+        if (courses.size() == 0) {
+            return null;
+        }
+
+        else {
+            return courses.get(courses.size() - 1);
+        }
+    }
+
+    public void removeLastCourse() {
+        if (courses.size() == 0) {
+            return;
+        }
+        else {
+            courses.remove(courses.size() - 1);
+        }
+    }
 }

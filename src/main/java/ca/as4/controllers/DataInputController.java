@@ -24,6 +24,7 @@ public class DataInputController {
     private int numLists = 0;
     private AtomicLong nextDepartmentId = new AtomicLong();
     private AtomicLong nextCourseId = new AtomicLong();
+    private AtomicLong nextCourseOfferingId = new AtomicLong();
 
     private String[] topCSVRow = {"SEMESTER", "SUBJECT", "CATALOGNUMBER",
                                   "LOCATION", "ENROLMENTCAPACITY", "ENROLMENTTOTAL",
@@ -84,21 +85,24 @@ public class DataInputController {
 
     }
 
-    private String getLastDepartment()
+    // todo write /api/departments{id}/courses{id} endpoint...
+
+    private String getLastDepartmentName()
     {
-        String lastDepartment;
+        String lastDepartmentName;
 
         if (departments.size() > 0)
         {
             int lastDepartmentIndex = departments.size() - 1;
-            lastDepartment = departments.get(lastDepartmentIndex).getName();
-        }
-        else
-        {
-            lastDepartment = "";
+            lastDepartmentName = departments.get(lastDepartmentIndex).getName();
         }
 
-        return lastDepartment;
+        else
+        {
+            lastDepartmentName = "";
+        }
+
+        return lastDepartmentName;
     }
 
     // retrieve and sort csv data if we haven't already
@@ -118,41 +122,96 @@ public class DataInputController {
     private void structureData()
     {
         if (departments.isEmpty()) {
-            // todo there might be a faster way to do this???
-            for (ArrayList<Data> currentDataSet : allSortedClasses)
+            // todo a faster way to do this is simultaneously with sortDataByClassName, but it's easier to see this way
+            for (int i = 0; i < allSortedClasses.size(); i++)
             {
-                if (!(currentDataSet.isEmpty())) {
-                    String currentDepartment = currentDataSet.get(0).getSubject();
+                ArrayList<Data> currentDataSet = allSortedClasses.get(i);
 
-                    // make sure not to add duplicates
-                    // current department different from last
-                    if (!(currentDepartment.equals( getLastDepartment() )))
+                if (!(currentDataSet.isEmpty())) {
+                    Data currentDepartment = currentDataSet.get(0);
+
+                    // current department different from last: create offerings for new course in new department
+                    if (!(currentDepartment.getSubject().equals(getLastDepartmentName())))
                     {
                         Department newDepartment = new Department();
                         newDepartment.setDeptId(nextDepartmentId.incrementAndGet());
-                        newDepartment.setName(currentDepartment);
+                        newDepartment.setName(currentDepartment.getSubject());
 
-                        // add all courses in this department
-                        for (Data currentCourse : currentDataSet) {
-                            Course newCourse = new Course();
-                            newCourse.setCourseId(nextCourseId.incrementAndGet());
-                            newCourse.setCatalogNumber(currentCourse.getCatalogNumber());
-                            newDepartment.setCourses(newCourse);
+                        Course newCourse = new Course();
+                        newCourse.setCourseId(nextCourseId.incrementAndGet());
+                        newCourse.setCatalogNumber(currentDepartment.getCatalogNumber());
+
+                        for (Data currentOffering : currentDataSet) {
+                            Offering newOffering = new Offering();
+                            newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
+                            newOffering.setLocation(currentOffering.getLocation());
+                            newOffering.setInstructors(currentOffering.getInstructors().toString());
+//                                newOffering.setYear(currentOffering.getYear()); // need to write getYear()
+                            newOffering.setSemesterCode(currentOffering.getSemester());
+//                                newOffering.setTerm(currentOffering.getTerm()); // need to write getTerm()
+
+                            newCourse.setOfferings(newOffering);
                         }
+
+                        newDepartment.setCourses(newCourse);
                         departments.add(newDepartment);
                     }
-                    // current department same from last
+
+                    // current dept same from last: create offerings for current course OR new course in current dept
                     else
                     {
-                        // add all courses in this department
-                        for (Data currentCourse : currentDataSet) {
+                        String currentCatalogNumber = allSortedClasses.get(i).get(0).getCatalogNumber();
+                        String previousCatalogNumber = allSortedClasses.get(i - 1).get(0).getCatalogNumber();
+
+                        // catalog number different: create offerings for new course in current department
+                        if (!(currentCatalogNumber.equals(previousCatalogNumber)))
+                        {
+                            Department tempDepartment = departments.get(departments.size() - 1);
+                            departments.remove(departments.size() - 1);
+
                             Course newCourse = new Course();
                             newCourse.setCourseId(nextCourseId.incrementAndGet());
-                            newCourse.setCatalogNumber(currentCourse.getCatalogNumber());
+                            newCourse.setCatalogNumber(currentDepartment.getCatalogNumber());
 
-                            Department tempDepartment = departments.get(departments.size() - 1);
+                            for (Data currentOffering : currentDataSet) {
+                                Offering newOffering = new Offering();
+                                newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
+                                newOffering.setLocation(currentOffering.getLocation());
+                                newOffering.setInstructors(currentOffering.getInstructors().toString());
+//                                newOffering.setYear(currentOffering.getYear()); // need to write getYear()
+                                newOffering.setSemesterCode(currentOffering.getSemester());
+//                                newOffering.setTerm(currentOffering.getTerm()); // need to write getTerm()
+
+
+                                newCourse.setOfferings(newOffering);
+                            }
+
                             tempDepartment.setCourses(newCourse);
+                            departments.add(tempDepartment);
+                        }
+
+                        // component codes same: create offerings for current course in current dept
+                        else
+                        {
+                            Department tempDepartment = departments.get(departments.size() - 1);
                             departments.remove(departments.size() - 1);
+                            Course tempCourse = tempDepartment.getLastCourse();
+                            tempDepartment.removeLastCourse();
+
+                            for (Data currentOffering : currentDataSet)
+                            {
+                                Offering newOffering = new Offering();
+                                newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
+                                newOffering.setLocation(currentOffering.getLocation());
+                                newOffering.setInstructors(currentOffering.getInstructors().toString());
+//                                newOffering.setYear(currentOffering.getYear()); // need to write getYear()
+                                newOffering.setSemesterCode(currentOffering.getSemester());
+//                                newOffering.setTerm(currentOffering.getTerm()); // need to write getTerm()
+
+                                tempCourse.setOfferings(newOffering);
+                            }
+
+                            tempDepartment.setCourses(tempCourse);
                             departments.add(tempDepartment);
                         }
                     }

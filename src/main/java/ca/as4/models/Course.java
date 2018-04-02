@@ -1,9 +1,12 @@
 package ca.as4.models;
 
+import java.util.ArrayList;
+
 public class Course
 {
     private long courseId;
     private String catalogNumber;
+    private ArrayList<Offering> offerings = new ArrayList<>();
 
     public Course() {}
 
@@ -26,5 +29,13 @@ public class Course
 
     public String getCatalogNumber() {
         return catalogNumber;
+    }
+
+    public void setOfferings(Offering offering) {
+        this.offerings.add(offering);
+    }
+
+    public ArrayList<Offering> getOfferings() {
+        return offerings;
     }
 }
