@@ -1,8 +1,14 @@
 package ca.as4.controllers;
 
 import ca.as4.models.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,6 +35,26 @@ public class DataInputController {
     private String[] topCSVRow = {"SEMESTER", "SUBJECT", "CATALOGNUMBER",
                                   "LOCATION", "ENROLMENTCAPACITY", "ENROLMENTTOTAL",
                                   "INSTRUCTORS", "COMPONENTCODE"};
+
+    // enabling Spring servlet
+    // copied from: https://stackoverflow.com/questions/36596069/spring-boot-mvc-whitelabel-error-page#36609620
+    @Configuration
+    @EnableWebMvc
+    public class ApplicationWebMvcConfig extends WebMvcConfigurerAdapter {
+
+        @Override
+        public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+            configurer.enable();
+        }
+
+        @Bean
+        public InternalResourceViewResolver viewResolver() {
+            InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+            resolver.setPrefix("/WEB-INF/views/jsp/");
+            resolver.setSuffix(".jsp");
+            return resolver;
+        }
+    }
 
     @GetMapping("/api/about")
     public AboutResponse getAbout()
