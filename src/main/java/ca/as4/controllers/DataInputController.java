@@ -69,7 +69,6 @@ public class DataInputController {
     public void dumpModel()
     {
         fetchData(); // fetch data if we haven't already
-
         display.printDump(allSortedClasses);
     }
 
@@ -111,7 +110,49 @@ public class DataInputController {
 
     }
 
-    // todo write /api/departments{id}/courses{id} endpoint...
+    // todo write /api/departments/{id}/courses/{id} endpoint...
+
+    @GetMapping("/api/departments/{deptID}/courses/{courseID}/offerings")
+    public ArrayList<Offering> getOfferings(@PathVariable("deptID") long deptID, @PathVariable("courseID") long courseID)
+    {
+        ArrayList<Course> courses = getCourses(deptID);
+        long IDOffset = 0;
+
+        if (courses.size() > 0)
+        {
+            IDOffset = courses.get(0).getCourseId();
+        }
+
+        return grabOfferings(courses, courseID, IDOffset);
+    }
+
+    private ArrayList<Offering> grabOfferings(ArrayList<Course> courses, long id, long IDOffset)
+    {
+        if (!(id <= courses.size() + IDOffset && id > IDOffset))
+        {
+            System.out.println(id);
+            throw new NotFound("Course for " + id + " is out of range.");
+        }
+
+        ArrayList<Offering> offerings = new ArrayList<>();
+        // search for department and return its courses
+        for (Course course : courses)
+        {
+            if (course.getCourseId() == id)
+            {
+                if (course.getOfferings().size() == 0)
+                {
+                    throw new NotFound("The id: " + id + " has no offerings.");
+                }
+                else
+                {
+                    offerings = course.getOfferings();
+                }
+            }
+        }
+
+        return offerings;
+    }
 
     private String getLastDepartmentName()
     {
@@ -122,7 +163,6 @@ public class DataInputController {
             int lastDepartmentIndex = departments.size() - 1;
             lastDepartmentName = departments.get(lastDepartmentIndex).getName();
         }
-
         else
         {
             lastDepartmentName = "";
@@ -168,15 +208,7 @@ public class DataInputController {
                         newCourse.setCatalogNumber(currentDepartment.getCatalogNumber());
 
                         for (Data currentOffering : currentDataSet) {
-                            Offering newOffering = new Offering();
-                            newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
-                            newOffering.setLocation(currentOffering.getLocation());
-                            newOffering.setInstructors(currentOffering.getInstructors().toString());
-//                                newOffering.setYear(currentOffering.getYear()); // need to write getYear()
-                            newOffering.setSemesterCode(currentOffering.getSemester());
-//                                newOffering.setTerm(currentOffering.getTerm()); // need to write getTerm()
-
-                            newCourse.setOfferings(newOffering);
+                            createCourseOffering(newCourse, currentOffering);
                         }
 
                         newDepartment.setCourses(newCourse);
@@ -199,17 +231,10 @@ public class DataInputController {
                             newCourse.setCourseId(nextCourseId.incrementAndGet());
                             newCourse.setCatalogNumber(currentDepartment.getCatalogNumber());
 
-                            for (Data currentOffering : currentDataSet) {
-                                Offering newOffering = new Offering();
-                                newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
-                                newOffering.setLocation(currentOffering.getLocation());
-                                newOffering.setInstructors(currentOffering.getInstructors().toString());
-//                                newOffering.setYear(currentOffering.getYear()); // need to write getYear()
-                                newOffering.setSemesterCode(currentOffering.getSemester());
-//                                newOffering.setTerm(currentOffering.getTerm()); // need to write getTerm()
-
-
-                                newCourse.setOfferings(newOffering);
+                            nextCourseOfferingId.getAndSet(0);
+                            for (Data currentOffering : currentDataSet)
+                            {
+                                createCourseOffering(newCourse, currentOffering);
                             }
 
                             tempDepartment.setCourses(newCourse);
@@ -224,17 +249,10 @@ public class DataInputController {
                             Course tempCourse = tempDepartment.getLastCourse();
                             tempDepartment.removeLastCourse();
 
+                            nextCourseOfferingId.getAndSet(0);
                             for (Data currentOffering : currentDataSet)
                             {
-                                Offering newOffering = new Offering();
-                                newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
-                                newOffering.setLocation(currentOffering.getLocation());
-                                newOffering.setInstructors(currentOffering.getInstructors().toString());
-//                                newOffering.setYear(currentOffering.getYear()); // need to write getYear()
-                                newOffering.setSemesterCode(currentOffering.getSemester());
-//                                newOffering.setTerm(currentOffering.getTerm()); // need to write getTerm()
-
-                                tempCourse.setOfferings(newOffering);
+                                createCourseOffering(tempCourse, currentOffering);
                             }
 
                             tempDepartment.setCourses(tempCourse);
@@ -244,6 +262,46 @@ public class DataInputController {
                 }
             }
         }
+    }
+
+    private void createCourseOffering(Course newCourse, Data currentOffering) {
+        Offering newOffering = new Offering();
+        newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
+        newOffering.setLocation(currentOffering.getLocation());
+        newOffering.setInstructors(currentOffering.getInstructors().toString());
+        newOffering.setSemesterCode(currentOffering.getSemester());
+        setYearAndTermOffering(currentOffering, newOffering);
+        newCourse.setOfferings(newOffering);
+
+    }
+
+    private void setYearAndTermOffering(Data currentOffering, Offering newOffering)
+    {
+        String semesterCode = currentOffering.getSemester() + "";
+        char term = semesterCode.charAt(3);
+        int year = Integer.parseInt(semesterCode.substring(1, 3)) + 2000;
+        String termToInsert;
+
+        switch (term)
+        {
+            case '1' :
+                termToInsert = "Spring";
+                break;
+
+            case '4' :
+                termToInsert = "Summer";
+                break;
+
+            case '7' :
+                termToInsert = "Fall";
+                break;
+
+            default :
+                termToInsert = "";
+        }
+
+        newOffering.setTerm(termToInsert);
+        newOffering.setYear(year);
     }
 
     private void retrieveCSVData()
