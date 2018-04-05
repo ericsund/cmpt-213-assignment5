@@ -12,6 +12,14 @@ public class Data {
     private int enrollmentTotal;
     private ArrayList<String> instructors;
     private String componentCode;
+    private ArrayList<String> allOfferrings = new ArrayList<>();
+
+    private int[] enrollments = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+    private boolean[] components = new boolean[] {false, false, false, false, false, false, false,
+            false, false, false, false, false, false, false,
+            false};
 
     public Data() { }
 
@@ -92,4 +100,27 @@ public class Data {
         this.componentCode = componentCode;
     }
 
+    public int[] getEnrollments() {
+        return enrollments;
+    }
+
+    public void setEnrollments(int[] enrollments) {
+        this.enrollments = enrollments;
+    }
+
+    public boolean[] getComponents() {
+        return components;
+    }
+
+    public void setComponents(boolean[] components) {
+        this.components = components;
+    }
+
+    public ArrayList<String> getAllOfferrings() {
+        return allOfferrings;
+    }
+
+    public void setAllOfferrings(ArrayList<String> allOfferrings) {
+        this.allOfferrings = allOfferrings;
+    }
 }

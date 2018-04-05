@@ -1,5 +1,7 @@
 package ca.as4.models;
 
+import java.util.ArrayList;
+
 public class Offering
 {
     private long courseOfferingId;
@@ -8,6 +10,9 @@ public class Offering
     private int year;
     private int semesterCode;
     private String term;
+    private int[] enrollments;
+    private boolean[] components;
+    private ArrayList<Section> sections = new ArrayList<>();
 
     public Offering() { }
 
@@ -44,6 +49,18 @@ public class Offering
         this.term = term;
     }
 
+    public void setEnrollments(int[] enrollments) {
+        this.enrollments = enrollments;
+    }
+
+    public void setComponents(boolean[] components) {
+        this.components = components;
+    }
+
+    public void setSections(ArrayList<Section> sections) {
+        this.sections = sections;
+    }
+
     public long getCourseOfferingId() {
         return courseOfferingId;
     }
@@ -66,5 +83,17 @@ public class Offering
 
     public String getTerm() {
         return term;
+    }
+
+    public int[] getEnrollments() {
+        return enrollments;
+    }
+
+    public boolean[] getComponents() {
+        return components;
+    }
+
+    public ArrayList<Section> getSections() {
+        return sections;
     }
 }

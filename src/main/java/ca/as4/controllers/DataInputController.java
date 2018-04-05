@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
@@ -70,6 +72,7 @@ public class DataInputController {
     {
         fetchData(); // fetch data if we haven't already
         display.printDump(allSortedClasses);
+        display.displayClassData(allSortedClasses);
     }
 
     @GetMapping("/api/departments")
@@ -110,8 +113,6 @@ public class DataInputController {
 
     }
 
-    // todo write /api/departments/{id}/courses/{id} endpoint...
-
     @GetMapping("/api/departments/{deptID}/courses/{courseID}/offerings")
     public ArrayList<Offering> getOfferings(@PathVariable("deptID") long deptID, @PathVariable("courseID") long courseID)
     {
@@ -130,7 +131,6 @@ public class DataInputController {
     {
         if (!(id <= courses.size() + IDOffset && id > IDOffset))
         {
-            System.out.println(id);
             throw new NotFound("Course for " + id + " is out of range.");
         }
 
@@ -142,16 +142,52 @@ public class DataInputController {
             {
                 if (course.getOfferings().size() == 0)
                 {
-                    throw new NotFound("The id: " + id + " has no offerings.");
+                    throw new NotFound("The course: " + id + " has no offerings.");
                 }
                 else
                 {
                     offerings = course.getOfferings();
+                    break;
                 }
             }
         }
 
         return offerings;
+    }
+
+    @GetMapping("/api/departments/{deptID}/courses/{courseID}/offerings/{sectionID}")
+    public ArrayList<Section> getSections(@PathVariable("deptID") long deptID,
+                                          @PathVariable("courseID") long courseID,
+                                          @PathVariable("sectionID") long sectionID)
+    {
+        ArrayList<Offering> offerings = getOfferings(deptID, courseID);
+        return grabSection(offerings, sectionID);
+    }
+
+    private ArrayList<Section> grabSection(ArrayList<Offering> offerings, long id)
+    {
+        if (!(id <= offerings.size() && id > 0))
+        {
+            throw new NotFound("Offerings for " + id + " is out of range.");
+        }
+
+        ArrayList<Section> sections = new ArrayList<>();
+        for (Offering offering : offerings)
+        {
+            if (offering.getCourseOfferingId() == id)
+            {
+                sections = offering.getSections();
+                if (sections.size() == 0)
+                {
+                    throw new NotFound("The id: " + id + " has no sections.");
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        return sections;
     }
 
     private String getLastDepartmentName()
@@ -193,8 +229,25 @@ public class DataInputController {
             {
                 ArrayList<Data> currentDataSet = allSortedClasses.get(i);
 
+                Collections.sort(currentDataSet, new Comparator<Data>() {
+                    @Override
+                    public int compare(Data o1, Data o2) {
+                        String t1 = o1.getSemester() + o1.getSubject() + o1.getCatalogNumber() +
+                                    o1.getLocation() + o1.getComponentCode();
+
+                        String t2 = o2.getSemester() + o2.getSubject() + o2.getCatalogNumber() +
+                                o1.getLocation() + o1.getComponentCode();
+
+                        return t1.compareTo(t2);
+                    }
+                });
+
+
                 if (!(currentDataSet.isEmpty())) {
                     Data currentDepartment = currentDataSet.get(0);
+
+                    String comparisonStr = currentDataSet.get(0).getSemester() + currentDataSet.get(0).getLocation();
+                    ArrayList<Data> group = new ArrayList<>();
 
                     // current department different from last: create offerings for new course in new department
                     if (!(currentDepartment.getSubject().equals(getLastDepartmentName())))
@@ -207,8 +260,23 @@ public class DataInputController {
                         newCourse.setCourseId(nextCourseId.incrementAndGet());
                         newCourse.setCatalogNumber(currentDepartment.getCatalogNumber());
 
-                        for (Data currentOffering : currentDataSet) {
-                            createCourseOffering(newCourse, currentOffering);
+                        for (Data currentOffering : currentDataSet)
+                        {
+                            display.perClassCalculations(currentOffering, currentOffering.getEnrollments(),
+                                    currentOffering.getComponents());
+
+                            String currentStr = currentOffering.getSemester() + currentOffering.getLocation();
+
+                            if (!currentStr.equals(comparisonStr))
+                            {
+                                Offering newOffering = buildOffering(group);
+                                newCourse.setOfferings(newOffering);
+
+                                comparisonStr = currentOffering.getSemester() + currentOffering.getLocation();
+                                group.clear();
+                            }
+
+                            group.add(currentOffering);
                         }
 
                         newDepartment.setCourses(newCourse);
@@ -234,7 +302,21 @@ public class DataInputController {
                             nextCourseOfferingId.getAndSet(0);
                             for (Data currentOffering : currentDataSet)
                             {
-                                createCourseOffering(newCourse, currentOffering);
+                                display.perClassCalculations(currentOffering, currentOffering.getEnrollments(),
+                                        currentOffering.getComponents());
+
+                                String currentStr = currentOffering.getSemester() + currentOffering.getLocation();
+
+                                if (!currentStr.equals(comparisonStr))
+                                {
+                                    Offering newOffering = buildOffering(group);
+                                    newCourse.setOfferings(newOffering);
+
+                                    comparisonStr = currentOffering.getSemester() + currentOffering.getLocation();
+                                    group.clear();
+                                }
+
+                                group.add(currentOffering);
                             }
 
                             tempDepartment.setCourses(newCourse);
@@ -252,7 +334,21 @@ public class DataInputController {
                             nextCourseOfferingId.getAndSet(0);
                             for (Data currentOffering : currentDataSet)
                             {
-                                createCourseOffering(tempCourse, currentOffering);
+                                display.perClassCalculations(currentOffering, currentOffering.getEnrollments(),
+                                        currentOffering.getComponents());
+
+                                String currentStr = currentOffering.getSemester() + currentOffering.getLocation();
+
+                                if (!currentStr.equals(comparisonStr))
+                                {
+                                    Offering newOffering = buildOffering(group);
+                                    tempCourse.setOfferings(newOffering);
+
+                                    comparisonStr = currentOffering.getSemester() + currentOffering.getLocation();
+                                    group.clear();
+                                }
+
+                                group.add(currentOffering);
                             }
 
                             tempDepartment.setCourses(tempCourse);
@@ -264,20 +360,71 @@ public class DataInputController {
         }
     }
 
-    private void createCourseOffering(Course newCourse, Data currentOffering) {
-        Offering newOffering = new Offering();
-        newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
-        newOffering.setLocation(currentOffering.getLocation());
-        newOffering.setInstructors(currentOffering.getInstructors().toString());
-        newOffering.setSemesterCode(currentOffering.getSemester());
-        setYearAndTermOffering(currentOffering, newOffering);
-        newCourse.setOfferings(newOffering);
+    private Offering buildOffering(ArrayList<Data> group)
+    {
+        int[] enrollments = group.get(0).getEnrollments();
+        boolean[] components = group.get(0).getComponents();
 
+        if (group.size() > 1)
+        {
+            int increment = 15;
+            for (int i = 1; i < group.size(); i++)
+            {
+                for (int j = 0; j < 15; j++)
+                {
+                    enrollments[j] += group.get(i).getEnrollments()[j];
+                    enrollments[j+increment] += group.get(i).getEnrollments()[j+increment];
+
+                    if (components[j] || group.get(i).getComponents()[j])
+                    {
+                        components[j] = true;
+                    }
+                }
+            }
+        }
+
+        Data temp = buildTempDataFile(group, enrollments, components);
+        Offering newOffering = new Offering();
+
+        newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
+        newOffering.setLocation(group.get(group.size()-1).getLocation());
+        newOffering.setInstructors(group.get(group.size()-1).getInstructors().toString()
+                .replace("[", "")
+                .replace("]", "")
+                .replace("  ", " ")
+                .trim());
+
+        newOffering.setSemesterCode(group.get(0).getSemester());
+        newOffering.setEnrollments(enrollments);
+        newOffering.setComponents(components);
+
+        setYearAndTermOffering(group.get(0).getSemester(), newOffering);
+        setSection(temp, newOffering);
+
+        return newOffering;
     }
 
-    private void setYearAndTermOffering(Data currentOffering, Offering newOffering)
+    private Data buildTempDataFile(ArrayList<Data> group, int[] enrollments, boolean[] components)
     {
-        String semesterCode = currentOffering.getSemester() + "";
+        Data temp = new Data();
+        temp.setComponentCode(group.get(0).getComponentCode());
+        temp.setLocation(group.get(group.size()-1).getLocation());
+        temp.setCatalogNumber(group.get(0).getCatalogNumber());
+        temp.setSubject(group.get(0).getSubject());
+        temp.setSemester(group.get(0).getSemester());
+        temp.setInstructors(group.get(group.size()-1).getInstructors());
+        temp.setEnrollments(enrollments);
+        temp.setComponents(components);
+
+        display.displayFormatter(temp.getEnrollments(), temp.getComponents(),
+                temp, temp.getAllOfferrings());
+
+        return temp;
+    }
+
+    private void setYearAndTermOffering(int semester, Offering newOffering)
+    {
+        String semesterCode = semester + "";
         char term = semesterCode.charAt(3);
         int year = Integer.parseInt(semesterCode.substring(1, 3)) + 2000;
         String termToInsert;
@@ -302,6 +449,25 @@ public class DataInputController {
 
         newOffering.setTerm(termToInsert);
         newOffering.setYear(year);
+    }
+
+    private void setSection(Data currentOffering, Offering newOffering)
+    {
+        ArrayList<Section> sections = new ArrayList<>();
+        for (long i = 0; i < currentOffering.getAllOfferrings().size(); i++)
+        {
+            String currentStr = currentOffering.getAllOfferrings().get((int)i);
+            String type = currentStr.substring(7, 10);
+            String enrollmentInfo = currentStr.substring(23, currentStr.length());
+            String[] numericalData = enrollmentInfo.split("/");
+
+            int enrollmentTotal = Integer.parseInt(numericalData[0]);
+            int enrollmentCap = Integer.parseInt(numericalData[1]);
+
+            Section section = new Section(i, type, enrollmentTotal, enrollmentCap);
+            sections.add(section);
+        }
+        newOffering.setSections(sections);
     }
 
     private void retrieveCSVData()

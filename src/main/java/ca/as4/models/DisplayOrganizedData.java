@@ -118,7 +118,7 @@ public class DisplayOrganizedData {
             }
         }
 
-        perClassCalculations(currentList, j, enrollments, components);
+        perClassCalculations(currentList.get(j), enrollments, components);
     }
 
     private void printCourseOfferings(ArrayList<String> instructors, int[] enrollments, boolean[] components,
@@ -131,7 +131,7 @@ public class DisplayOrganizedData {
                         .trim());
 
         ArrayList<String> allOfferrings = new ArrayList<>();
-        displayFormatter(enrollments, components, currentList, allOfferrings);
+        displayFormatter(enrollments, components, currentList.get(0), allOfferrings);
         Collections.sort(allOfferrings);
 
         for (String currentString : allOfferrings) {
@@ -143,7 +143,7 @@ public class DisplayOrganizedData {
     }
 
     private void setEnrollmentArr(int[] enrollments, boolean[] components, int i, int j,
-                                  int indexList, ArrayList<Data> currentList, boolean reset)
+                                  Data currentFile, boolean reset)
     {
         if (reset)
         {
@@ -153,169 +153,169 @@ public class DisplayOrganizedData {
         }
         else
         {
-            enrollments[i] += currentList.get(indexList).getEnrollmentTotal();
-            enrollments[j] += currentList.get(indexList).getEnrollmentCapacity();
+            enrollments[i] += currentFile.getEnrollmentTotal();
+            enrollments[j] += currentFile.getEnrollmentCapacity();
             components[i] = true;
         }
     }
 
-    private void perClassCalculations(ArrayList<Data> currentList, int j, int[] enrollments, boolean[] components) {
-        switch (currentList.get(j).getComponentCode()) {
+    public void perClassCalculations(Data currentFile, int[] enrollments, boolean[] components) {
+        switch (currentFile.getComponentCode()) {
 
             case "LAB":
                 // add up all lab data for a class' semester's location
-                setEnrollmentArr(enrollments, components, 0, 15, j, currentList, false);
+                setEnrollmentArr(enrollments, components, 0, 15, currentFile, false);
                 break;
 
             case "OPL":
                 // add up all pol data for a class' semester's location
-                setEnrollmentArr(enrollments, components, 1, 16, j, currentList, false);
+                setEnrollmentArr(enrollments, components, 1, 16, currentFile, false);
                 break;
 
             case "TUT":
                 // add up all tut data for a class' semester's location
-                setEnrollmentArr(enrollments, components, 2, 17, j, currentList, false);
+                setEnrollmentArr(enrollments, components, 2, 17, currentFile, false);
                 break;
 
             case "WKS":
                 // add up all opl data for a class' semester's location
-                setEnrollmentArr(enrollments, components, 3, 18, j, currentList, false);
+                setEnrollmentArr(enrollments, components, 3, 18, currentFile, false);
                 break;
 
             case "FLD":
-                setEnrollmentArr(enrollments, components, 4, 19, j, currentList, false);
+                setEnrollmentArr(enrollments, components, 4, 19, currentFile, false);
                 break;
 
             case "SEC":
-                setEnrollmentArr(enrollments, components, 5, 20, j, currentList, false);
+                setEnrollmentArr(enrollments, components, 5, 20, currentFile, false);
                 break;
 
             case "STD":
-                setEnrollmentArr(enrollments, components, 6, 21, j, currentList, false);
+                setEnrollmentArr(enrollments, components, 6, 21, currentFile, false);
                 break;
 
             case "OLC":
-                setEnrollmentArr(enrollments, components, 7, 22, j, currentList, false);
+                setEnrollmentArr(enrollments, components, 7, 22, currentFile, false);
                 break;
 
             case "STL":
-                setEnrollmentArr(enrollments, components, 8, 23, j, currentList, false);
+                setEnrollmentArr(enrollments, components, 8, 23, currentFile, false);
                 break;
 
             case "RQL":
-                setEnrollmentArr(enrollments, components, 9, 24, j, currentList, false);
+                setEnrollmentArr(enrollments, components, 9, 24, currentFile, false);
                 break;
 
             case "SEM":
-                setEnrollmentArr(enrollments, components, 10, 25, j, currentList, false);
+                setEnrollmentArr(enrollments, components, 10, 25, currentFile, false);
                 break;
 
             case "PRA":
-                setEnrollmentArr(enrollments, components, 11, 26, j, currentList, false);
+                setEnrollmentArr(enrollments, components, 11, 26, currentFile, false);
                 break;
 
             case "INS":
-                setEnrollmentArr(enrollments, components, 12, 27, j, currentList, false);
+                setEnrollmentArr(enrollments, components, 12, 27, currentFile, false);
                 break;
 
             case "CNV":
-                setEnrollmentArr(enrollments, components, 13, 28, j, currentList, false);
+                setEnrollmentArr(enrollments, components, 13, 28, currentFile, false);
                 break;
 
             default:
-                setEnrollmentArr(enrollments, components, 14, 29, j, currentList, false);
+                setEnrollmentArr(enrollments, components, 14, 29, currentFile, false);
         }
     }
 
-    private void displayFormatter(int[] enrollments, boolean[] components, ArrayList<Data> currentList, ArrayList<String> allOfferrings) {
+    public void displayFormatter(int[] enrollments, boolean[] components, Data currentFile, ArrayList<String> allOfferrings) {
         if (components[0]) {
             allOfferrings.add("\t\t" + "Type=LAB, Enrollment=" + enrollments[0] +
                     "/" + enrollments[15]);
 
-            setEnrollmentArr(enrollments, components, 0, 15, 0, currentList, true);
+            setEnrollmentArr(enrollments, components, 0, 15, currentFile, true);
         }
 
         if (components[1]) {
             allOfferrings.add("\t\t" + "Type=OPL, Enrollment=" + enrollments[1] +
                     "/" + enrollments[16]);
 
-            setEnrollmentArr(enrollments, components, 1, 16, 0, currentList, true);
+            setEnrollmentArr(enrollments, components, 1, 16, currentFile, true);
         }
 
         if (components[2]) {
             allOfferrings.add("\t\t" + "Type=TUT, Enrollment=" + enrollments[2] +
                     "/" + enrollments[17]);
 
-            setEnrollmentArr(enrollments, components, 2, 17, 0, currentList, true);
+            setEnrollmentArr(enrollments, components, 2, 17, currentFile, true);
         }
 
         if (components[3]) {
             allOfferrings.add("\t\t" + "Type=WKS, Enrollment=" + enrollments[3] +
                     "/" + enrollments[18]);
 
-            setEnrollmentArr(enrollments, components, 3, 18, 0, currentList, true);
+            setEnrollmentArr(enrollments, components, 3, 18, currentFile, true);
         }
 
         if (components[4]) {
             allOfferrings.add("\t\t" + "Type=FLD, Enrollment=" + enrollments[4] +
                     "/" + enrollments[19]);
 
-            setEnrollmentArr(enrollments, components, 4, 19, 0, currentList, true);
+            setEnrollmentArr(enrollments, components, 4, 19, currentFile, true);
         }
         if (components[5]) {
             allOfferrings.add("\t\t" + "Type=SEC, Enrollment=" + enrollments[5] +
                     "/" + enrollments[20]);
 
-            setEnrollmentArr(enrollments, components, 5, 20, 0, currentList, true);
+            setEnrollmentArr(enrollments, components, 5, 2, currentFile, true);
         }
 
         if (components[6]) {
             allOfferrings.add("\t\t" + "Type=STD, Enrollment=" + enrollments[6] +
                     "/" + enrollments[21]);
 
-            setEnrollmentArr(enrollments, components, 6, 21, 0, currentList, true);
+            setEnrollmentArr(enrollments, components, 6, 21, currentFile, true);
         }
 
         if (components[7]) {
             allOfferrings.add("\t\t" + "Type=OLC, Enrollment=" + enrollments[7] +
                     "/" + enrollments[22]);
 
-            setEnrollmentArr(enrollments, components, 7, 22, 0, currentList, true);
+            setEnrollmentArr(enrollments, components, 7, 22, currentFile, true);
         }
 
         if (components[8]) {
             allOfferrings.add("\t\t" + "Type=STL, Enrollment=" + enrollments[8] +
                     "/" + enrollments[23]);
 
-            setEnrollmentArr(enrollments, components, 8, 23, 0, currentList, true);
+            setEnrollmentArr(enrollments, components, 8, 23, currentFile, true);
         }
 
         if (components[9]) {
             allOfferrings.add("\t\t" + "Type=RQL, Enrollment=" + enrollments[9] +
                     "/" + enrollments[24]);
 
-            setEnrollmentArr(enrollments, components, 9, 24, 0, currentList, true);
+            setEnrollmentArr(enrollments, components, 9, 24, currentFile, true);
         }
 
         if (components[10]) {
             allOfferrings.add("\t\t" + "Type=SEM, Enrollment=" + enrollments[10] +
                     "/" + enrollments[25]);
 
-            setEnrollmentArr(enrollments, components, 10, 25, 0, currentList, true);
+            setEnrollmentArr(enrollments, components, 10, 25, currentFile, true);
         }
 
         if (components[11]) {
             allOfferrings.add("\t\t" + "Type=PRA, Enrollment=" + enrollments[11] +
                     "/" + enrollments[26]);
 
-            setEnrollmentArr(enrollments, components, 11, 26, 0, currentList, true);
+            setEnrollmentArr(enrollments, components, 11, 26, currentFile, true);
         }
 
         if (components[12]) {
             allOfferrings.add("\t\t" + "Type=PRA, Enrollment=" + enrollments[12] +
                     "/" + enrollments[27]);
 
-            setEnrollmentArr(enrollments, components, 11, 27, 0, currentList, true);
+            setEnrollmentArr(enrollments, components, 11, 27, currentFile, true);
         }
 
         if (components[13])
@@ -323,14 +323,14 @@ public class DisplayOrganizedData {
             allOfferrings.add("\t\t" + "Type=CNV, Enrollment=" + enrollments[13] +
                     "/" + enrollments[28]);
 
-            setEnrollmentArr(enrollments, components, 13, 28, 0, currentList, true);
+            setEnrollmentArr(enrollments, components, 13, 28, currentFile, true);
         }
 
         if (components[14]) {
             allOfferrings.add("\t\t" + "Type=LEC, Enrollment=" + enrollments[14] +
                     "/" + enrollments[29]);
 
-            setEnrollmentArr(enrollments, components, 14, 29, 0, currentList, true);
+            setEnrollmentArr(enrollments, components, 14, 29, currentFile, true);
         }
     }
 
@@ -357,7 +357,7 @@ public class DisplayOrganizedData {
     }
 
     // Debug: Display all instructors
-    public void displayClassData(ArrayList<Data>[] allSortedClasses)
+    public void displayClassData(ArrayList<ArrayList<Data>> allSortedClasses)
     {
         System.out.println();
 
