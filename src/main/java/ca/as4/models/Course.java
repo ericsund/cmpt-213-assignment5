@@ -2,7 +2,7 @@ package ca.as4.models;
 
 import java.util.ArrayList;
 
-public class Course
+public class Course implements Comparable<Course>
 {
     private long courseId;
     private String catalogNumber;
@@ -31,11 +31,15 @@ public class Course
         return catalogNumber;
     }
 
-    public void setOfferings(Offering offering) {
+    public void addOffering(Offering offering) {
         this.offerings.add(offering);
     }
 
     public ArrayList<Offering> getOfferings() {
         return offerings;
+    }
+
+    public int compareTo(Course other) {
+        return catalogNumber.compareTo(other.catalogNumber);
     }
 }

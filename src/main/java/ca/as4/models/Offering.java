@@ -2,7 +2,7 @@ package ca.as4.models;
 
 import java.util.ArrayList;
 
-public class Offering
+public class Offering implements Comparable<Offering>
 {
     private long courseOfferingId;
     private String location;
@@ -95,5 +95,11 @@ public class Offering
 
     public ArrayList<Section> getSections() {
         return sections;
+    }
+
+    @Override
+    public int compareTo(Offering other)
+    {
+        return this.semesterCode - other.getSemesterCode();
     }
 }

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /*
 A class to create Department objects
 */
-public class Department {
+public class Department implements Comparable<Department> {
     private long deptId;
     private String name;
     private ArrayList<Course> courses = new ArrayList<>();
@@ -33,12 +33,37 @@ public class Department {
         return name;
     }
 
-    public void setCourses(Course course) {
+    public void addCourse(Course course) {
         this.courses.add(course);
+    }
+
+    // overloaded this to add a course to a specific spot
+    public void addCourse(int i, Course course) {
+        this.courses.add(i, course);
     }
 
     public ArrayList<Course> getCourses() {
         return courses;
+    }
+
+    public Course getSpecificCourse(int i) {
+        if (courses.size() == 0) {
+            return null;
+        }
+
+        else {
+            return courses.get(i);
+        }
+    }
+
+    public void removeSpecificCourse(int i) {
+        if (courses.size() == 0) {
+            return;
+        }
+
+        else {
+            courses.remove(i);
+        }
     }
 
     public Course getLastCourse() {
@@ -52,11 +77,15 @@ public class Department {
     }
 
     public void removeLastCourse() {
-        if (courses.size() == 0) {
-            return;
-        }
-        else {
+        if (courses.size() > 0)
+        {
             courses.remove(courses.size() - 1);
         }
+    }
+
+    @Override
+    public int compareTo(Department other)
+    {
+        return name.compareTo(other.name);
     }
 }

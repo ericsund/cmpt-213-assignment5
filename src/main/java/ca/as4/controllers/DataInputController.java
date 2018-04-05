@@ -1,6 +1,7 @@
 package ca.as4.controllers;
 
 import ca.as4.models.*;
+import ca.as4.models.NewOfferingObj;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -190,6 +191,119 @@ public class DataInputController {
         return sections;
     }
 
+    // todo refactor this to work with hash tables?
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/api/addoffering")
+    public void addOffering(@RequestBody NewOfferingObj newOfferingObj)
+    {
+        boolean existingDepartment = false;
+        boolean existingCourse = false;
+
+        int foundDept = 0;
+        int foundCourse = 0;
+
+        // find the department
+        for (int i = 0; i < departments.size(); i++)
+        {
+            Department department = departments.get(i);
+            if (department.getName().equals(newOfferingObj.getSubjectName()))
+            {
+                foundDept = i;
+                existingDepartment = true;
+            }
+
+        }
+
+        // create a new offering for a new course in a new department
+        if (!(existingDepartment))
+        {
+            Department newDept = new Department();
+            newDept.setDeptId(nextDepartmentId.incrementAndGet());
+            newDept.setName(newOfferingObj.getSubjectName());
+
+            Course newCourse = new Course();
+            newCourse.setCourseId(nextCourseId.incrementAndGet());
+            newCourse.setCatalogNumber(newOfferingObj.getCatalogNumber());
+
+            Offering newOffering = new Offering();
+            newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
+            newOffering.setLocation(newOfferingObj.getLocation());
+            newOffering.setInstructors(newOfferingObj.getInstructor());
+//            newOffering.setYear();
+            newOffering.setSemesterCode(newOfferingObj.getSemester());
+//            newOffering.setTerm();
+
+            newCourse.addOffering(newOffering); // add new offering to new course
+            newDept.addCourse(newCourse); // add new course to new department
+            Collections.sort(newDept.getCourses()); // resort courses with new addition
+            departments.add(newDept); // add new department to master list
+            Collections.sort(departments); // resort departments with the new addition
+        }
+
+        // find the course in the existing department
+        if (existingDepartment)
+        {
+            ArrayList<Course> courses = departments.get(foundDept).getCourses();
+            for (int i = 0; i < courses.size(); i++)
+            {
+                Course course = courses.get(i);
+                if (course.getCatalogNumber().equals(newOfferingObj.getCatalogNumber()))
+                {
+                    foundCourse = i;
+                    existingCourse = true;
+                }
+            }
+        }
+
+        // add new offering to existing course in existing department
+        if (existingDepartment && existingCourse)
+        {
+            Department tempDept = departments.get(foundDept);
+            departments.remove(foundDept);
+
+            Course tempCourse = tempDept.getSpecificCourse(foundCourse);
+            tempDept.removeSpecificCourse(foundCourse);
+
+            Offering newOffering = new Offering();
+            newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
+            newOffering.setLocation(newOfferingObj.getLocation());
+            newOffering.setInstructors(newOfferingObj.getInstructor());
+//            newOffering.setYear();
+            newOffering.setSemesterCode(newOfferingObj.getSemester());
+//            newOffering.setTerm();
+
+            tempCourse.addOffering(newOffering); // add new offering to existing course
+            Collections.sort(tempCourse.getOfferings()); // resort offerings with new addition
+            tempDept.addCourse(foundCourse, tempCourse); // put existing course back where we found it
+            departments.add(foundDept, tempDept); // put existing department back where we found it
+        }
+
+        // create new offering for a new course in existing department
+        if (existingDepartment && !(existingCourse))
+        {
+            Department tempDept = departments.get(foundDept);
+            departments.remove(foundDept);
+
+            Course newCourse = new Course();
+            newCourse.setCourseId(nextCourseId.incrementAndGet());
+            newCourse.setCatalogNumber(newOfferingObj.getCatalogNumber());
+
+            Offering newOffering = new Offering();
+            newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
+            newOffering.setLocation(newOfferingObj.getLocation());
+            newOffering.setInstructors(newOfferingObj.getInstructor());
+//            newOffering.setYear();
+            newOffering.setSemesterCode(newOfferingObj.getSemester());
+//            newOffering.setTerm();
+
+            newCourse.addOffering(newOffering); // add new offering to new course
+            tempDept.addCourse(newCourse); // add new course to existing department
+            Collections.sort(tempDept.getCourses()); // resort courses with new addition
+            departments.add(foundDept, tempDept); // put department back where we found it
+        }
+    }
+
     private String getLastDepartmentName()
     {
         String lastDepartmentName;
@@ -262,7 +376,7 @@ public class DataInputController {
 
                         buildGroupedClasses(currentDataSet, comparisonStr, group, newCourse);
 
-                        newDepartment.setCourses(newCourse);
+                        newDepartment.addCourse(newCourse);
                         departments.add(newDepartment);
                     }
 
@@ -285,7 +399,7 @@ public class DataInputController {
                             nextCourseOfferingId.getAndSet(0);
                             buildGroupedClasses(currentDataSet, comparisonStr, group, newCourse);
 
-                            tempDepartment.setCourses(newCourse);
+                            tempDepartment.addCourse(newCourse);
                             departments.add(tempDepartment);
                         }
 
@@ -300,7 +414,7 @@ public class DataInputController {
                             nextCourseOfferingId.getAndSet(0);
                             buildGroupedClasses(currentDataSet, comparisonStr, group, tempCourse);
 
-                            tempDepartment.setCourses(tempCourse);
+                            tempDepartment.addCourse(tempCourse);
                             departments.add(tempDepartment);
                         }
                     }
@@ -325,7 +439,7 @@ public class DataInputController {
         if (!currentStr.equals(comparisonStr))
         {
             Offering newOffering = buildOffering(group);
-            newCourse.setOfferings(newOffering);
+            newCourse.addOffering(newOffering);
 
             comparisonStr = currentOffering.getSemester() + currentOffering.getLocation();
             group.clear();
