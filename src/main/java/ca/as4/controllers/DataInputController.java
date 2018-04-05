@@ -72,7 +72,7 @@ public class DataInputController {
     {
         fetchData(); // fetch data if we haven't already
         display.printDump(allSortedClasses);
-        display.displayClassData(allSortedClasses);
+//        display.displayClassData(allSortedClasses);
     }
 
     @GetMapping("/api/departments")
@@ -260,24 +260,7 @@ public class DataInputController {
                         newCourse.setCourseId(nextCourseId.incrementAndGet());
                         newCourse.setCatalogNumber(currentDepartment.getCatalogNumber());
 
-                        for (Data currentOffering : currentDataSet)
-                        {
-                            display.perClassCalculations(currentOffering, currentOffering.getEnrollments(),
-                                    currentOffering.getComponents());
-
-                            String currentStr = currentOffering.getSemester() + currentOffering.getLocation();
-
-                            if (!currentStr.equals(comparisonStr))
-                            {
-                                Offering newOffering = buildOffering(group);
-                                newCourse.setOfferings(newOffering);
-
-                                comparisonStr = currentOffering.getSemester() + currentOffering.getLocation();
-                                group.clear();
-                            }
-
-                            group.add(currentOffering);
-                        }
+                        buildGroupedClasses(currentDataSet, comparisonStr, group, newCourse);
 
                         newDepartment.setCourses(newCourse);
                         departments.add(newDepartment);
@@ -300,24 +283,7 @@ public class DataInputController {
                             newCourse.setCatalogNumber(currentDepartment.getCatalogNumber());
 
                             nextCourseOfferingId.getAndSet(0);
-                            for (Data currentOffering : currentDataSet)
-                            {
-                                display.perClassCalculations(currentOffering, currentOffering.getEnrollments(),
-                                        currentOffering.getComponents());
-
-                                String currentStr = currentOffering.getSemester() + currentOffering.getLocation();
-
-                                if (!currentStr.equals(comparisonStr))
-                                {
-                                    Offering newOffering = buildOffering(group);
-                                    newCourse.setOfferings(newOffering);
-
-                                    comparisonStr = currentOffering.getSemester() + currentOffering.getLocation();
-                                    group.clear();
-                                }
-
-                                group.add(currentOffering);
-                            }
+                            buildGroupedClasses(currentDataSet, comparisonStr, group, newCourse);
 
                             tempDepartment.setCourses(newCourse);
                             departments.add(tempDepartment);
@@ -332,24 +298,7 @@ public class DataInputController {
                             tempDepartment.removeLastCourse();
 
                             nextCourseOfferingId.getAndSet(0);
-                            for (Data currentOffering : currentDataSet)
-                            {
-                                display.perClassCalculations(currentOffering, currentOffering.getEnrollments(),
-                                        currentOffering.getComponents());
-
-                                String currentStr = currentOffering.getSemester() + currentOffering.getLocation();
-
-                                if (!currentStr.equals(comparisonStr))
-                                {
-                                    Offering newOffering = buildOffering(group);
-                                    tempCourse.setOfferings(newOffering);
-
-                                    comparisonStr = currentOffering.getSemester() + currentOffering.getLocation();
-                                    group.clear();
-                                }
-
-                                group.add(currentOffering);
-                            }
+                            buildGroupedClasses(currentDataSet, comparisonStr, group, tempCourse);
 
                             tempDepartment.setCourses(tempCourse);
                             departments.add(tempDepartment);
@@ -358,6 +307,30 @@ public class DataInputController {
                 }
             }
         }
+    }
+
+    private void buildGroupedClasses(ArrayList<Data> currentDataSet, String comparisonStr, ArrayList<Data> group, Course tempCourse) {
+        for (Data currentOffering : currentDataSet)
+        {
+            display.perClassCalculations(currentOffering, currentOffering.getEnrollments(),
+                    currentOffering.getComponents());
+
+            String currentStr = currentOffering.getSemester() + currentOffering.getLocation();
+            comparisonStr = getStringAndBuildNewOffering(comparisonStr, group, tempCourse, currentOffering, currentStr);
+            group.add(currentOffering);
+        }
+    }
+
+    private String getStringAndBuildNewOffering(String comparisonStr, ArrayList<Data> group, Course newCourse, Data currentOffering, String currentStr) {
+        if (!currentStr.equals(comparisonStr))
+        {
+            Offering newOffering = buildOffering(group);
+            newCourse.setOfferings(newOffering);
+
+            comparisonStr = currentOffering.getSemester() + currentOffering.getLocation();
+            group.clear();
+        }
+        return comparisonStr;
     }
 
     private Offering buildOffering(ArrayList<Data> group)
