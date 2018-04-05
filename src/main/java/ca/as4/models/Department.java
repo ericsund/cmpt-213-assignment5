@@ -88,4 +88,30 @@ public class Department implements Comparable<Department> {
     {
         return name.compareTo(other.name);
     }
+
+    public void recalculateAllIDs(ArrayList<Department> departments)
+    {
+        long i = 1;
+        for (Department department : departments)
+        {
+            department.setDeptId(i);
+            i++;
+
+            long j = 1;
+            for (Course courses : department.getCourses())
+            {
+                courses.setCourseId(j);
+                j++;
+
+                long k = 1;
+                for (Offering offering : courses.getOfferings())
+                {
+                    offering.setCourseOfferingId(k);
+                    k++;
+                }
+            }
+
+        }
+    }
+
 }

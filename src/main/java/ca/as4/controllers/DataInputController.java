@@ -1,7 +1,6 @@
 package ca.as4.controllers;
 
 import ca.as4.models.*;
-import ca.as4.models.NewOfferingObj;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class DataInputController {
+    private boolean needToReSort = true;
+
     private DisplayOrganizedData display = new DisplayOrganizedData();
+    private Department reSort = new Department();
     private SortController sorter = new SortController();
     private ArrayList<String[]> csvData = new ArrayList<>();
     private ArrayList<Data> allData = new ArrayList<>();
@@ -72,8 +74,10 @@ public class DataInputController {
     public void dumpModel()
     {
         fetchData(); // fetch data if we haven't already
+        checkReSort();
+
         display.printDump(allSortedClasses);
-//        display.displayClassData(allSortedClasses);
+        display.displayClassData(allSortedClasses);
     }
 
     @GetMapping("/api/departments")
@@ -81,6 +85,8 @@ public class DataInputController {
     {
         fetchData(); // fetch data if we haven't already
         structureData(); // structure data if we haven't already
+        checkReSort();
+
         return departments;
     }
 
@@ -89,6 +95,7 @@ public class DataInputController {
     {
         fetchData(); // fetch data if we haven't already
         structureData(); // structure data if we haven't already
+        checkReSort();
 
         // quit if id is out of range
         if (!(id <= departments.size() && id > 0))
@@ -130,12 +137,13 @@ public class DataInputController {
 
     private ArrayList<Offering> grabOfferings(ArrayList<Course> courses, long id, long IDOffset)
     {
-        if (!(id <= courses.size() + IDOffset && id > IDOffset))
+        if (!(id < courses.size() + IDOffset && id >= IDOffset))
         {
             throw new NotFound("Course for " + id + " is out of range.");
         }
 
         ArrayList<Offering> offerings = new ArrayList<>();
+
         // search for department and return its courses
         for (Course course : courses)
         {
@@ -195,10 +203,16 @@ public class DataInputController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/api/addoffering")
-    public void addOffering(@RequestBody NewOfferingObj newOfferingObj)
+    public void addoffering(@RequestBody Data newData)
     {
         boolean existingDepartment = false;
         boolean existingCourse = false;
+
+        display.perClassCalculations(newData, newData.getEnrollments(),
+                newData.getComponents());
+
+        display.displayFormatter(newData.getEnrollments(), newData.getComponents(),
+                newData, newData.getAllOfferings());
 
         int foundDept = 0;
         int foundCourse = 0;
@@ -207,7 +221,7 @@ public class DataInputController {
         for (int i = 0; i < departments.size(); i++)
         {
             Department department = departments.get(i);
-            if (department.getName().equals(newOfferingObj.getSubjectName()))
+            if (department.getName().equals(newData.getSubjectName()))
             {
                 foundDept = i;
                 existingDepartment = true;
@@ -220,25 +234,20 @@ public class DataInputController {
         {
             Department newDept = new Department();
             newDept.setDeptId(nextDepartmentId.incrementAndGet());
-            newDept.setName(newOfferingObj.getSubjectName());
+            newDept.setName(newData.getSubjectName());
 
             Course newCourse = new Course();
             newCourse.setCourseId(nextCourseId.incrementAndGet());
-            newCourse.setCatalogNumber(newOfferingObj.getCatalogNumber());
+            newCourse.setCatalogNumber(newData.getCatalogNumber());
 
-            Offering newOffering = new Offering();
-            newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
-            newOffering.setLocation(newOfferingObj.getLocation());
-            newOffering.setInstructors(newOfferingObj.getInstructor());
-//            newOffering.setYear();
-            newOffering.setSemesterCode(newOfferingObj.getSemester());
-//            newOffering.setTerm();
+            Offering newOffering = buildOffering(newData);
 
             newCourse.addOffering(newOffering); // add new offering to new course
+
             newDept.addCourse(newCourse); // add new course to new department
             Collections.sort(newDept.getCourses()); // resort courses with new addition
             departments.add(newDept); // add new department to master list
-            Collections.sort(departments); // resort departments with the new addition
+            needToReSort = true;
         }
 
         // find the course in the existing department
@@ -248,7 +257,7 @@ public class DataInputController {
             for (int i = 0; i < courses.size(); i++)
             {
                 Course course = courses.get(i);
-                if (course.getCatalogNumber().equals(newOfferingObj.getCatalogNumber()))
+                if (course.getCatalogNumber().equals(newData.getCatalogNumber()))
                 {
                     foundCourse = i;
                     existingCourse = true;
@@ -265,18 +274,12 @@ public class DataInputController {
             Course tempCourse = tempDept.getSpecificCourse(foundCourse);
             tempDept.removeSpecificCourse(foundCourse);
 
-            Offering newOffering = new Offering();
-            newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
-            newOffering.setLocation(newOfferingObj.getLocation());
-            newOffering.setInstructors(newOfferingObj.getInstructor());
-//            newOffering.setYear();
-            newOffering.setSemesterCode(newOfferingObj.getSemester());
-//            newOffering.setTerm();
+            Offering newOffering = buildOffering(newData);
 
             tempCourse.addOffering(newOffering); // add new offering to existing course
             Collections.sort(tempCourse.getOfferings()); // resort offerings with new addition
             tempDept.addCourse(foundCourse, tempCourse); // put existing course back where we found it
-            departments.add(foundDept, tempDept); // put existing department back where we found it
+            needToReSort = true;
         }
 
         // create new offering for a new course in existing department
@@ -286,21 +289,23 @@ public class DataInputController {
             departments.remove(foundDept);
 
             Course newCourse = new Course();
-            newCourse.setCourseId(nextCourseId.incrementAndGet());
-            newCourse.setCatalogNumber(newOfferingObj.getCatalogNumber());
 
-            Offering newOffering = new Offering();
-            newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
-            newOffering.setLocation(newOfferingObj.getLocation());
-            newOffering.setInstructors(newOfferingObj.getInstructor());
-//            newOffering.setYear();
-            newOffering.setSemesterCode(newOfferingObj.getSemester());
-//            newOffering.setTerm();
+            newCourse.setCatalogNumber(newData.getCatalogNumber());
+            Offering newOffering = buildOffering(newData);
 
             newCourse.addOffering(newOffering); // add new offering to new course
             tempDept.addCourse(newCourse); // add new course to existing department
             Collections.sort(tempDept.getCourses()); // resort courses with new addition
-            departments.add(foundDept, tempDept); // put department back where we found it
+            needToReSort = true;
+        }
+    }
+
+    private void checkReSort() {
+        if (needToReSort)
+        {
+            Collections.sort(departments);
+            reSort.recalculateAllIDs(departments);
+            needToReSort = false;
         }
     }
 
@@ -346,11 +351,11 @@ public class DataInputController {
                 Collections.sort(currentDataSet, new Comparator<Data>() {
                     @Override
                     public int compare(Data o1, Data o2) {
-                        String t1 = o1.getSemester() + o1.getSubject() + o1.getCatalogNumber() +
-                                    o1.getLocation() + o1.getComponentCode();
+                        String t1 = o1.getSemester() + o1.getSubjectName() + o1.getCatalogNumber() +
+                                    o1.getLocation() + o1.getComponent();
 
-                        String t2 = o2.getSemester() + o2.getSubject() + o2.getCatalogNumber() +
-                                o1.getLocation() + o1.getComponentCode();
+                        String t2 = o2.getSemester() + o2.getSubjectName() + o2.getCatalogNumber() +
+                                o1.getLocation() + o1.getComponent();
 
                         return t1.compareTo(t2);
                     }
@@ -364,16 +369,16 @@ public class DataInputController {
                     ArrayList<Data> group = new ArrayList<>();
 
                     // current department different from last: create offerings for new course in new department
-                    if (!(currentDepartment.getSubject().equals(getLastDepartmentName())))
+                    if (!(currentDepartment.getSubjectName().equals(getLastDepartmentName())))
                     {
                         Department newDepartment = new Department();
                         newDepartment.setDeptId(nextDepartmentId.incrementAndGet());
-                        newDepartment.setName(currentDepartment.getSubject());
+                        newDepartment.setName(currentDepartment.getSubjectName());
 
                         Course newCourse = new Course();
                         newCourse.setCourseId(nextCourseId.incrementAndGet());
-                        newCourse.setCatalogNumber(currentDepartment.getCatalogNumber());
 
+                        newCourse.setCatalogNumber(currentDepartment.getCatalogNumber());
                         buildGroupedClasses(currentDataSet, comparisonStr, group, newCourse);
 
                         newDepartment.addCourse(newCourse);
@@ -423,14 +428,29 @@ public class DataInputController {
         }
     }
 
-    private void buildGroupedClasses(ArrayList<Data> currentDataSet, String comparisonStr, ArrayList<Data> group, Course tempCourse) {
+    private void buildGroupedClasses(ArrayList<Data> currentDataSet, String comparisonStr, ArrayList<Data> group, Course newCourse) {
+        if (currentDataSet.size() == 1)
+        {
+            Data data = currentDataSet.get(0);
+
+            display.perClassCalculations(data, data.getEnrollments(),
+                    data.getComponents());
+
+            display.displayFormatter(data.getEnrollments(), data.getComponents(),
+                    data, data.getAllOfferings());
+
+            Offering newOffering = buildOffering(currentDataSet.get(0));
+            newCourse.addOffering(newOffering);
+            return;
+        }
+
         for (Data currentOffering : currentDataSet)
         {
             display.perClassCalculations(currentOffering, currentOffering.getEnrollments(),
                     currentOffering.getComponents());
 
             String currentStr = currentOffering.getSemester() + currentOffering.getLocation();
-            comparisonStr = getStringAndBuildNewOffering(comparisonStr, group, tempCourse, currentOffering, currentStr);
+            comparisonStr = getStringAndBuildNewOffering(comparisonStr, group, newCourse, currentOffering, currentStr);
             group.add(currentOffering);
         }
     }
@@ -445,6 +465,43 @@ public class DataInputController {
             group.clear();
         }
         return comparisonStr;
+    }
+
+    private Offering buildOffering(Data newData)
+    {
+        int[] enrollments = newData.getEnrollments();
+        boolean[] components = newData.getComponents();
+
+        Offering newOffering = new Offering();
+
+        newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
+        newOffering.setLocation(newData.getLocation());
+
+        if (newData.getInstructors().size() > 0)
+        {
+            newOffering.setInstructors(newData.getInstructors().toString()
+                    .replace("[", "")
+                    .replace("]", "")
+                    .replace("  ", " ")
+                    .trim());
+        }
+        else
+        {
+            newOffering.setInstructors(newData.getInstructor()
+                    .replace("[", "")
+                    .replace("]", "")
+                    .replace("  ", " ")
+                    .trim());
+        }
+
+        newOffering.setSemesterCode(newData.getSemester());
+        newOffering.setEnrollments(enrollments);
+        newOffering.setComponents(components);
+
+        setYearAndTermOffering(newData.getSemester(), newOffering);
+        setSection(newData, newOffering);
+
+        return newOffering;
     }
 
     private Offering buildOffering(ArrayList<Data> group)
@@ -494,17 +551,17 @@ public class DataInputController {
     private Data buildTempDataFile(ArrayList<Data> group, int[] enrollments, boolean[] components)
     {
         Data temp = new Data();
-        temp.setComponentCode(group.get(0).getComponentCode());
+        temp.setComponent(group.get(0).getComponent());
         temp.setLocation(group.get(group.size()-1).getLocation());
         temp.setCatalogNumber(group.get(0).getCatalogNumber());
-        temp.setSubject(group.get(0).getSubject());
+        temp.setSubjectName(group.get(0).getSubjectName());
         temp.setSemester(group.get(0).getSemester());
         temp.setInstructors(group.get(group.size()-1).getInstructors());
         temp.setEnrollments(enrollments);
         temp.setComponents(components);
 
         display.displayFormatter(temp.getEnrollments(), temp.getComponents(),
-                temp, temp.getAllOfferrings());
+                temp, temp.getAllOfferings());
 
         return temp;
     }
@@ -541,9 +598,18 @@ public class DataInputController {
     private void setSection(Data currentOffering, Offering newOffering)
     {
         ArrayList<Section> sections = new ArrayList<>();
-        for (long i = 0; i < currentOffering.getAllOfferrings().size(); i++)
+
+        if (currentOffering.getSubjectName().equals("CMPT"))
         {
-            String currentStr = currentOffering.getAllOfferrings().get((int)i);
+            if (currentOffering.getCatalogNumber().equals("100"))
+            {
+                System.out.println(currentOffering.getAllOfferings().size());
+            }
+        }
+
+        for (long i = 0; i < currentOffering.getAllOfferings().size(); i++)
+        {
+            String currentStr = currentOffering.getAllOfferings().get((int)i);
             String type = currentStr.substring(7, 10);
             String enrollmentInfo = currentStr.substring(23, currentStr.length());
             String[] numericalData = enrollmentInfo.split("/");
@@ -675,18 +741,18 @@ public class DataInputController {
         }
 
         classData.setSemester(semester);
-        classData.setSubject(subject);
+        classData.setSubjectName(subject);
         classData.setCatalogNumber(catalogNumber);
         classData.setLocation(location);
-        classData.setEnrollmentCapacity(enrollmentCapacity);
+        classData.setEnrollmentCap(enrollmentCapacity);
         classData.setEnrollmentTotal(enrollmentTotal);
         classData.setInstructors(instructors);
-        classData.setComponentCode(componentCode);
+        classData.setComponent(componentCode);
 
-        boolean isComponentCodeAClass = (!classData.getComponentCode().equals("TUT")
-                || !classData.getComponentCode().equals("LAB")
-                || !classData.getComponentCode().equals("OPL")
-                || !classData.getComponentCode().equals("WKS"));
+        boolean isComponentCodeAClass = (!classData.getComponent().equals("TUT")
+                || !classData.getComponent().equals("LAB")
+                || !classData.getComponent().equals("OPL")
+                || !classData.getComponent().equals("WKS"));
 
         if (!allData.contains(classData) && isComponentCodeAClass)
         {

@@ -39,7 +39,7 @@ public class DisplayOrganizedData {
                                                       false};
 
                 // print course group
-                System.out.println(currentList.get(0).getSubject() + " " +
+                System.out.println(currentList.get(0).getSubjectName() + " " +
                         currentList.get(0).getCatalogNumber());
 
                 if (currentList.size() == 1)
@@ -154,13 +154,13 @@ public class DisplayOrganizedData {
         else
         {
             enrollments[i] += currentFile.getEnrollmentTotal();
-            enrollments[j] += currentFile.getEnrollmentCapacity();
+            enrollments[j] += currentFile.getEnrollmentCap();
             components[i] = true;
         }
     }
 
     public void perClassCalculations(Data currentFile, int[] enrollments, boolean[] components) {
-        switch (currentFile.getComponentCode()) {
+        switch (currentFile.getComponent()) {
 
             case "LAB":
                 // add up all lab data for a class' semester's location
@@ -368,13 +368,13 @@ public class DisplayOrganizedData {
             {
                 for (Data currentData : currentList)
                 {
-                    System.out.print(countNumData + ". " + currentData.getSemester() + ", " + currentData.getSubject() + ", "
+                    System.out.print(countNumData + ". " + currentData.getSemester() + ", " + currentData.getSubjectName() + ", "
                             + currentData.getCatalogNumber() + ", " + currentData.getLocation() + ", "
-                            + currentData.getEnrollmentCapacity() + ", " + currentData.getEnrollmentTotal() + ", ");
+                            + currentData.getEnrollmentCap() + ", " + currentData.getEnrollmentTotal() + ", ");
 
                     System.out.print(displayAllInstructors(currentData) + ", ");
 
-                    System.out.println(currentData.getComponentCode());
+                    System.out.println(currentData.getComponent());
                     countNumData++;
                 }
                 System.out.println();

@@ -1,18 +1,18 @@
 package ca.as4.models;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class Data {
     private int semester;
-    private String subject;
+    private String subjectName;
     private String catalogNumber;
     private String location;
-    private int enrollmentCapacity;
+    private int enrollmentCap;
     private int enrollmentTotal;
-    private ArrayList<String> instructors;
-    private String componentCode;
-    private ArrayList<String> allOfferrings = new ArrayList<>();
+    private ArrayList<String> instructors = new ArrayList<>();
+    private String component;
+    private String instructor;
+    private ArrayList<String> allOfferings = new ArrayList<>();
 
     private int[] enrollments = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -23,17 +23,28 @@ public class Data {
 
     public Data() { }
 
-    public Data(int semester, String subject, String catalogNumber, String location, int enrollmentCapacity,
-                int enrollmentTotal, ArrayList<String> instructors, String componentCode)
-    {
+    public Data(int semester, String subjectName, String catalogNumber, String location, int enrollmentCap, String component, int enrollmentTotal, String instructor) {
         this.semester = semester;
-        this.subject = subject;
+        this.subjectName = subjectName;
         this.catalogNumber = catalogNumber;
         this.location = location;
-        this.enrollmentCapacity = enrollmentCapacity;
+        this.enrollmentCap = enrollmentCap;
+        this.enrollmentTotal = enrollmentTotal;
+        this.component = component;
+        this.instructor = instructor;
+    }
+
+    public Data(int semester, String subjectName, String catalogNumber, String location, int enrollmentCap,
+                int enrollmentTotal, ArrayList<String> instructors, String component)
+    {
+        this.semester = semester;
+        this.subjectName = subjectName;
+        this.catalogNumber = catalogNumber;
+        this.location = location;
+        this.enrollmentCap = enrollmentCap;
         this.enrollmentTotal = enrollmentTotal;
         this.instructors = instructors;
-        this.componentCode = componentCode;
+        this.component = component;
     }
 
     public int getSemester() {
@@ -44,12 +55,12 @@ public class Data {
         this.semester = semester;
     }
 
-    public String getSubject() {
-        return subject;
+    public String getSubjectName() {
+        return subjectName;
     }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
     }
 
     public String getCatalogNumber() {
@@ -68,12 +79,12 @@ public class Data {
         this.location = location;
     }
 
-    public int getEnrollmentCapacity() {
-        return enrollmentCapacity;
+    public int getEnrollmentCap() {
+        return enrollmentCap;
     }
 
-    public void setEnrollmentCapacity(int enrollmentCapacity) {
-        this.enrollmentCapacity = enrollmentCapacity;
+    public void setEnrollmentCap(int enrollmentCap) {
+        this.enrollmentCap = enrollmentCap;
     }
 
     public int getEnrollmentTotal() {
@@ -92,12 +103,12 @@ public class Data {
         this.instructors = instructors;
     }
 
-    public String getComponentCode() {
-        return componentCode;
+    public String getComponent() {
+        return component;
     }
 
-    public void setComponentCode(String componentCode) {
-        this.componentCode = componentCode;
+    public void setComponent(String component) {
+        this.component = component;
     }
 
     public int[] getEnrollments() {
@@ -116,11 +127,19 @@ public class Data {
         this.components = components;
     }
 
-    public ArrayList<String> getAllOfferrings() {
-        return allOfferrings;
+    public ArrayList<String> getAllOfferings() {
+        return allOfferings;
     }
 
-    public void setAllOfferrings(ArrayList<String> allOfferrings) {
-        this.allOfferrings = allOfferrings;
+    public void setAllOfferings(ArrayList<String> allOfferings) {
+        this.allOfferings = allOfferings;
+    }
+
+    public String getInstructor() {
+        return instructor;
+    }
+
+    public void setInstructor(String instructor) {
+        this.instructor = instructor;
     }
 }

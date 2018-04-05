@@ -17,10 +17,10 @@ public class SortController {
         for (int i = 0; i < allData.size(); i++)
         {
             boolean inOrganizedClass = checkInOrganizedClass(allData.get(i), organizeClasses);
-            boolean isComponentCodeAClass = (!allData.get(i).getComponentCode().equals("TUT")
-                    || !allData.get(i).getComponentCode().equals("LAB")
-                    || !allData.get(i).getComponentCode().equals("OPL")
-                    || !allData.get(i).getComponentCode().equals("WKS"));
+            boolean isComponentCodeAClass = (!allData.get(i).getComponent().equals("TUT")
+                    || !allData.get(i).getComponent().equals("LAB")
+                    || !allData.get(i).getComponent().equals("OPL")
+                    || !allData.get(i).getComponent().equals("WKS"));
 
             if (!inOrganizedClass && isComponentCodeAClass)
             {
@@ -66,8 +66,8 @@ public class SortController {
         Collections.sort(organizeClasses, new Comparator<ArrayList<Data>>() {
             @Override
             public int compare(ArrayList<Data> o1, ArrayList<Data> o2) {
-                String o1Class = o1.get(0).getSubject() + " " + o1.get(0).getCatalogNumber();
-                String o2Class = o2.get(0).getSubject() + " " + o2.get(0).getCatalogNumber();
+                String o1Class = o1.get(0).getSubjectName() + " " + o1.get(0).getCatalogNumber();
+                String o2Class = o2.get(0).getSubjectName() + " " + o2.get(0).getCatalogNumber();
                 return o1Class.compareTo(o2Class);
             }
         });
@@ -90,7 +90,7 @@ public class SortController {
                     if (!currentFile.getLocation().equals(compareData.getLocation()))
                     {
                         otherCampusDataPresent = true;
-                        if (currentFile.getComponentCode().equals("LEC"))
+                        if (currentFile.getComponent().equals("LEC"))
                         {
                             indexLecOfOtherCampus = numClassesInOtherCampus;
                         }
@@ -121,7 +121,7 @@ public class SortController {
 
     private boolean checkClassRelated(Data currentFile, Data compareData)
     {
-        boolean checkSubjectSame = compareData.getSubject().equals(currentFile.getSubject());
+        boolean checkSubjectSame = compareData.getSubjectName().equals(currentFile.getSubjectName());
         boolean checkCatalogSame = compareData.getCatalogNumber().equals(currentFile.getCatalogNumber());
 
         if (checkSubjectSame && checkCatalogSame)
