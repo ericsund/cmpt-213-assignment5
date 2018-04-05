@@ -77,7 +77,7 @@ public class DataInputController {
         checkReSort();
 
         display.printDump(allSortedClasses);
-        display.displayClassData(allSortedClasses);
+//        display.displayClassData(allSortedClasses);
     }
 
     @GetMapping("/api/departments")
