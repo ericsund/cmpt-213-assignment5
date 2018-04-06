@@ -3,9 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CMPT 213 Assignment 5.iml" filepath="$PROJECT_DIR$/CMPT 213 Assignment 5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Code-Course_Planner_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Code-Course_Planner_main.iml" group="Course_Planner" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Code-Course_Planner_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Code-Course_Planner_test.iml" group="Course_Planner" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Course_Planner.iml" filepath="$PROJECT_DIR$/.idea/modules/Course_Planner.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Course_Planner_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Course_Planner_main.iml" group="Course_Planner" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Course_Planner_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Course_Planner_test.iml" group="Course_Planner" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Course_Planner_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Course_Planner_main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Course_Planner_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Course_Planner_test.iml" />
     </modules>
   </component>
 </project>

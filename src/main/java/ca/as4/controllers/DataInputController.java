@@ -19,6 +19,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class DataInputController {
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // todo move to watcher controller
+    private AtomicLong nextWatcherId = new AtomicLong();
+    private ArrayList<Watcher> watchersList = new ArrayList<>();
+    // -----------------------------------------------------------------------------------------------------------------
+
     private boolean needToReSort = true;
 
     private DisplayOrganizedData display = new DisplayOrganizedData();
@@ -58,6 +65,36 @@ public class DataInputController {
             return resolver;
         }
     }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // todo move to watcher controller
+
+    @GetMapping("/api/watchers")
+    public ArrayList<Watcher> getWatchers()
+    {
+        return watchersList;
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/api/watchers")
+    public void createWatcher(@RequestBody Watcher newWatcher)
+    {
+        // model should always have an updated copy of departments
+        newWatcher.setDepartments(departments);
+
+        newWatcher.setId(nextWatcherId.incrementAndGet());
+
+        newWatcher.setDepartment(newWatcher.getDeptId());
+        // department id implicitly set via curl
+        newWatcher.setName(newWatcher.getDeptId());
+
+        newWatcher.setCourse(newWatcher.getCourseId());
+        // course id implicitly set via curl
+        newWatcher.setCatalogNumber(newWatcher.getDeptId(), newWatcher.getCourseId());
+
+        watchersList.add(newWatcher);
+    }
+    // -----------------------------------------------------------------------------------------------------------------
 
     @GetMapping("/api/about")
     public AboutResponse getAbout()
