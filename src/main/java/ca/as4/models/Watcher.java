@@ -38,7 +38,7 @@ public class Watcher implements Iterable<Offering>
         this.department = departments.get((int)deptId-1);
     }
 
-    public List<Watcher> getObservers() {
+    public ArrayList<Watcher> getObservers() {
         return observers;
     }
 
@@ -113,9 +113,10 @@ public class Watcher implements Iterable<Offering>
         return catalogNumber;
     }
 
-    public void stateChanged(long deptId, long courseId) {
-        if (this.getDeptId() == deptId &&
-                this.getCourseId() == courseId)
+    private void stateChanged(ArrayList<Offering> list, Watcher observer, long deptId, long courseId) {
+        System.out.println("deptId: " + deptId + " and courseId: " + courseId);
+        if (observer.getDeptId() == deptId &&
+                observer.getCourseId() == courseId)
         {
             // update the screen
             Date dNow = new Date();
@@ -134,9 +135,16 @@ public class Watcher implements Iterable<Offering>
         }
     }
 
+    public ArrayList<String> getEvents() {
+        return events;
+    }
+
     public void insert(Offering offering, long deptId, long courseId) {
         list.add(offering);
-        notifyObservers(deptId, courseId);
+        System.out.println("list size: " + list.size());
+        System.out.println("last thing in the list: " + list.get(0));
+        System.out.println("deptId: " + deptId + " and courseId: " + courseId);
+        notifyObservers(list, deptId, courseId);
     }
 
     @Override
@@ -147,10 +155,19 @@ public class Watcher implements Iterable<Offering>
      */
     // (Should put this list at top with other fields!)
 
-    private void notifyObservers(long deptId, long courseId) {
+    private void notifyObservers(ArrayList<Offering> list, long deptId, long courseId) {
         for (Watcher observer : observers) {
-            observer.stateChanged(deptId, courseId);
+            observer.stateChanged(list, observer, deptId, courseId);
         }
+    }
+
+    public int getNumberOfObservers() {
+        return observers.size();
+    }
+
+    private ArrayList<Offering> getOfferings() {
+        // this will always be non-zero when called in stateChanged()
+        return list;
     }
 }
 

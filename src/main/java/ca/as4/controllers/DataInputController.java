@@ -70,11 +70,23 @@ public class DataInputController {
     // todo move to watcher controller
 
     @GetMapping("/api/watchers")
-    public List<Watcher> getWatchers()
+    public ArrayList<Watcher> getWatchers()
     {
         fetchData();
         structureData();
         checkReSort();
+
+//        debug
+//        ArrayList<Watcher> watchers = list.getObservers();
+//        Watcher w = watchers.get(watchers.size()-1);
+//        System.out.println("We have " + watchers.size() + " observers!");
+//        System.out.println("Watcher data for its dept: " + w.getDepartment().getName());
+//        System.out.println("Watcher data for its cat number: " + w.getCourse().getCatalogNumber());
+//
+//        if (w instanceof Watcher) {
+//            System.out.println("We have a watcher!");
+//        }
+
         return list.getObservers();
     }
 
@@ -93,10 +105,12 @@ public class DataInputController {
 
         newWatcher.setDepartment(newWatcher.getDeptId());
         // department id implicitly set via curl
+        newWatcher.setDeptId(newWatcher.getDepartment().getDeptId());
         newWatcher.setName(newWatcher.getDeptId());
 
         newWatcher.setCourse(newWatcher.getCourseId());
         // course id implicitly set via curl
+        newWatcher.setCourseId(newWatcher.getCourse().getCourseId());
         newWatcher.setCatalogNumber(newWatcher.getDeptId(), newWatcher.getCourseId());
 
         list.addObserver(newWatcher);
@@ -259,7 +273,7 @@ public class DataInputController {
             Offering newOffering = buildOffering(newData);
 
             newCourse.addOffering(newOffering); // add new offering to new course
-            list.insert(newOffering, newDept.getDeptId(), newCourse.getCourseId());
+            list.insert(newOffering, newDept.getDeptId(), newCourse.getCourseId()); // add to watchers list
 
             newDept.addCourse(newCourse); // add new course to new department
             Collections.sort(newDept.getCourses()); // resort courses with new addition
@@ -282,7 +296,7 @@ public class DataInputController {
             }
         }
 
-        // add new offering to existing course in existing department
+        // create new offering for an existing course in existing department
         if (existingDepartment && existingCourse)
         {
             Department tempDept = departments.get(foundDept);
@@ -292,10 +306,12 @@ public class DataInputController {
             tempDept.removeSpecificCourse(foundCourse);
 
             Offering newOffering = buildOffering(newData);
+            list.insert(newOffering, tempDept.getDeptId(), tempCourse.getCourseId()); // add to watchers list
 
             tempCourse.addOffering(newOffering); // add new offering to existing course
             Collections.sort(tempCourse.getOfferings()); // resort offerings with new addition
             tempDept.addCourse(foundCourse, tempCourse); // put existing course back where we found it
+            departments.add(tempDept);
             needToReSort = true;
         }
 
@@ -309,10 +325,12 @@ public class DataInputController {
 
             newCourse.setCatalogNumber(newData.getCatalogNumber());
             Offering newOffering = buildOffering(newData);
+            list.insert(newOffering, tempDept.getDeptId(), newCourse.getCourseId()); // add to watchers list
 
             newCourse.addOffering(newOffering); // add new offering to new course
             tempDept.addCourse(newCourse); // add new course to existing department
             Collections.sort(tempDept.getCourses()); // resort courses with new addition
+            departments.add(tempDept);
             needToReSort = true;
         }
     }

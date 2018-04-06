@@ -88,7 +88,7 @@ curl -i -s -H "Content-Type: application/json" \
         "instructor": "Brian Fraser"
     }' ${SERVER}/api/addoffering
 
-#curl -i -s -H "Content-Type: application/json" -X POST  -d '{"semester": 1191,"subjectName": "CPSC","catalogNumber": 213,"location": "SURREY","enrollmentCap": 90,"component": "LEC","enrollmentTotal": 89,"instructor": "Brian Fraser"}' localhost:8080/api/addoffering
+#curl -i -s -H "Content-Type: application/json" -X POST  -d '{"semester": 1191,"subjectName": "CMPT","catalogNumber": 100,"location": "SURREY","enrollmentCap": 90,"component": "LEC","enrollmentTotal": 89,"instructor": "Brian Fraser"}' localhost:8080/api/addoffering
 
 curl -i -s -H "Content-Type: application/json" \
     -X POST  -d '{
