@@ -1,6 +1,7 @@
 package ca.as4.models;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 /*
 A class to create Department objects
@@ -9,6 +10,8 @@ public class Department implements Comparable<Department> {
     private long deptId;
     private String name;
     private ArrayList<Course> courses = new ArrayList<>();
+    private TreeMap<Integer, GraphData> graphTreeMap = new TreeMap<>();
+    private ArrayList<Integer> semesters = new ArrayList<>();
 
     public Department() { }
 
@@ -81,6 +84,22 @@ public class Department implements Comparable<Department> {
         {
             courses.remove(courses.size() - 1);
         }
+    }
+
+    public TreeMap<Integer, GraphData> getGraphTreeMap() {
+        return graphTreeMap;
+    }
+
+    public void setGraphTreeMap(TreeMap<Integer, GraphData> graphTreeMap) {
+        this.graphTreeMap = graphTreeMap;
+    }
+
+    public ArrayList<Integer> getSemesters() {
+        return semesters;
+    }
+
+    public void setSemesters(ArrayList<Integer> semesters) {
+        this.semesters = semesters;
     }
 
     @Override

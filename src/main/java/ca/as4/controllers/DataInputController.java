@@ -14,9 +14,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
@@ -86,7 +84,6 @@ public class DataInputController {
         fetchData(); // fetch data if we haven't already
         structureData(); // structure data if we haven't already
         checkReSort();
-
         return departments;
     }
 
@@ -135,35 +132,6 @@ public class DataInputController {
         return grabOfferings(courses, courseID, IDOffset);
     }
 
-    private ArrayList<Offering> grabOfferings(ArrayList<Course> courses, long id, long IDOffset)
-    {
-        if (!(id < courses.size() + IDOffset && id >= IDOffset))
-        {
-            throw new NotFound("Course for " + id + " is out of range.");
-        }
-
-        ArrayList<Offering> offerings = new ArrayList<>();
-
-        // search for department and return its courses
-        for (Course course : courses)
-        {
-            if (course.getCourseId() == id)
-            {
-                if (course.getOfferings().size() == 0)
-                {
-                    throw new NotFound("The course: " + id + " has no offerings.");
-                }
-                else
-                {
-                    offerings = course.getOfferings();
-                    break;
-                }
-            }
-        }
-
-        return offerings;
-    }
-
     @GetMapping("/api/departments/{deptID}/courses/{courseID}/offerings/{sectionID}")
     public ArrayList<Section> getSections(@PathVariable("deptID") long deptID,
                                           @PathVariable("courseID") long courseID,
@@ -205,6 +173,10 @@ public class DataInputController {
     @PostMapping("/api/addoffering")
     public void addoffering(@RequestBody Data newData)
     {
+        fetchData(); // fetch data if we haven't already
+        structureData(); // structure data if we haven't already
+        checkReSort();
+
         boolean existingDepartment = false;
         boolean existingCourse = false;
 
@@ -300,6 +272,65 @@ public class DataInputController {
         }
     }
 
+    @GetMapping("/api/stats/students-per-semester")
+    @ResponseStatus(HttpStatus.OK)
+    public ArrayList<GraphData> graphData(@RequestParam(value = "deptId", required = true) long deptID)
+    {
+        fetchData(); // fetch data if we haven't already
+        structureData(); // structure data if we haven't already
+        checkReSort();
+
+        if (!(deptID <= departments.size() && deptID > 0))
+        {
+            throw new NotFound("Offerings for " + deptID + " is out of range.");
+        }
+
+        Department currentDepartment = departments.get((int)deptID-1);
+        TreeMap<Integer, GraphData> currentMap = currentDepartment.getGraphTreeMap();
+        ArrayList<Integer> semesters = currentDepartment.getSemesters();
+        Collections.sort(semesters);
+
+        GraphData[] graph = new GraphData[currentMap.size()];
+        ArrayList<GraphData> graphData = new ArrayList<>();
+
+        for (int i = 0; i < semesters.size(); i++)
+        {
+            graph[i] = currentMap.get(semesters.get(i));
+            graphData.add(graph[i]);
+        }
+
+        return graphData;
+    }
+
+    private ArrayList<Offering> grabOfferings(ArrayList<Course> courses, long id, long IDOffset)
+    {
+        if (!(id < courses.size() + IDOffset && id >= IDOffset))
+        {
+            throw new NotFound("Course for " + id + " is out of range.");
+        }
+
+        ArrayList<Offering> offerings = new ArrayList<>();
+
+        // search for department and return its courses
+        for (Course course : courses)
+        {
+            if (course.getCourseId() == id)
+            {
+                if (course.getOfferings().size() == 0)
+                {
+                    throw new NotFound("The course: " + id + " has no offerings.");
+                }
+                else
+                {
+                    offerings = course.getOfferings();
+                    break;
+                }
+            }
+        }
+
+        return offerings;
+    }
+
     private void checkReSort() {
         if (needToReSort)
         {
@@ -374,12 +405,18 @@ public class DataInputController {
                         Department newDepartment = new Department();
                         newDepartment.setDeptId(nextDepartmentId.incrementAndGet());
                         newDepartment.setName(currentDepartment.getSubjectName());
+                        TreeMap<Integer, GraphData> currentTable = newDepartment.getGraphTreeMap();
+                        ArrayList<Integer> semesters = newDepartment.getSemesters();
 
                         Course newCourse = new Course();
                         newCourse.setCourseId(nextCourseId.incrementAndGet());
 
                         newCourse.setCatalogNumber(currentDepartment.getCatalogNumber());
-                        buildGroupedClasses(currentDataSet, comparisonStr, group, newCourse);
+                        buildGroupedClasses(currentDataSet, comparisonStr, group, newCourse,
+                                currentTable, semesters);
+
+                        newDepartment.setGraphTreeMap(currentTable);
+                        newDepartment.setSemesters(semesters);
 
                         newDepartment.addCourse(newCourse);
                         departments.add(newDepartment);
@@ -396,13 +433,19 @@ public class DataInputController {
                         {
                             Department tempDepartment = departments.get(departments.size() - 1);
                             departments.remove(departments.size() - 1);
+                            TreeMap<Integer, GraphData> currentTable = tempDepartment.getGraphTreeMap();
+                            ArrayList<Integer> semesters = tempDepartment.getSemesters();
 
                             Course newCourse = new Course();
                             newCourse.setCourseId(nextCourseId.incrementAndGet());
                             newCourse.setCatalogNumber(currentDepartment.getCatalogNumber());
 
                             nextCourseOfferingId.getAndSet(0);
-                            buildGroupedClasses(currentDataSet, comparisonStr, group, newCourse);
+                            buildGroupedClasses(currentDataSet, comparisonStr, group, newCourse,
+                                    currentTable, semesters);
+
+                            tempDepartment.setGraphTreeMap(currentTable);
+                            tempDepartment.setSemesters(semesters);
 
                             tempDepartment.addCourse(newCourse);
                             departments.add(tempDepartment);
@@ -415,9 +458,15 @@ public class DataInputController {
                             departments.remove(departments.size() - 1);
                             Course tempCourse = tempDepartment.getLastCourse();
                             tempDepartment.removeLastCourse();
+                            TreeMap<Integer, GraphData> currentTable = tempDepartment.getGraphTreeMap();
+                            ArrayList<Integer> semesters = tempDepartment.getSemesters();
 
                             nextCourseOfferingId.getAndSet(0);
-                            buildGroupedClasses(currentDataSet, comparisonStr, group, tempCourse);
+                            buildGroupedClasses(currentDataSet, comparisonStr, group, tempCourse,
+                                    currentTable, semesters);
+
+                            tempDepartment.setGraphTreeMap(currentTable);
+                            tempDepartment.setSemesters(semesters);
 
                             tempDepartment.addCourse(tempCourse);
                             departments.add(tempDepartment);
@@ -428,7 +477,8 @@ public class DataInputController {
         }
     }
 
-    private void buildGroupedClasses(ArrayList<Data> currentDataSet, String comparisonStr, ArrayList<Data> group, Course newCourse) {
+    private void buildGroupedClasses(ArrayList<Data> currentDataSet, String comparisonStr, ArrayList<Data> group,
+                                     Course newCourse, TreeMap<Integer, GraphData> currentTable, ArrayList<Integer> semesters) {
         if (currentDataSet.size() == 1)
         {
             Data data = currentDataSet.get(0);
@@ -439,8 +489,10 @@ public class DataInputController {
             display.displayFormatter(data.getEnrollments(), data.getComponents(),
                     data, data.getAllOfferings());
 
-            Offering newOffering = buildOffering(currentDataSet.get(0));
+            Offering newOffering = buildOffering(data);
             newCourse.addOffering(newOffering);
+
+            updateTreeTable(currentTable, data, semesters);
             return;
         }
 
@@ -452,6 +504,29 @@ public class DataInputController {
             String currentStr = currentOffering.getSemester() + currentOffering.getLocation();
             comparisonStr = getStringAndBuildNewOffering(comparisonStr, group, newCourse, currentOffering, currentStr);
             group.add(currentOffering);
+
+            updateTreeTable(currentTable, currentOffering, semesters);
+        }
+    }
+
+    private void updateTreeTable(TreeMap<Integer, GraphData> currentTable, Data currentOffering, ArrayList<Integer> semesters) {
+        if (currentOffering.getComponent().equals("LEC"))
+        {
+            GraphData tempGraph = new GraphData(currentOffering.getSemester(), currentOffering.getEnrollmentTotal());
+
+            if (!semesters.contains(currentOffering.getSemester()))
+            {
+                semesters.add(currentOffering.getSemester());
+            }
+
+            if (currentTable.containsKey(currentOffering.getSemester()))
+            {
+                currentTable.get(currentOffering.getSemester()).incrementEnrollmentTotal(currentOffering.getEnrollmentTotal());
+            }
+            else
+            {
+                currentTable.put(currentOffering.getSemester(), tempGraph);
+            }
         }
     }
 
@@ -598,14 +673,6 @@ public class DataInputController {
     private void setSection(Data currentOffering, Offering newOffering)
     {
         ArrayList<Section> sections = new ArrayList<>();
-
-        if (currentOffering.getSubjectName().equals("CMPT"))
-        {
-            if (currentOffering.getCatalogNumber().equals("100"))
-            {
-                System.out.println(currentOffering.getAllOfferings().size());
-            }
-        }
 
         for (long i = 0; i < currentOffering.getAllOfferings().size(); i++)
         {
@@ -778,14 +845,6 @@ public class DataInputController {
 
         return stringToFix;
     }
-
-//    private void buildArrayList(ArrayList<Data>[] organizeByClass)
-//    {
-//        for (int i = 0; i < numLists; i++)
-//        {
-//            organizeByClass[i] = new ArrayList<>();
-//        }
-//    }
 
     // Exceptions
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -4,15 +4,15 @@ public class Section
 {
     private long sectionID;
     private String type;
-    private int enrollmentTotal;
-    private int enrollmentCap;
+    private int totalCoursesTaken = 0;
+    private int enrollmentCap = 0;
 
     public Section() {}
 
-    public Section(long sectionID, String type, int enrollmentTotal, int enrollmentCap) {
+    public Section(long sectionID, String type, int totalCoursesTaken, int enrollmentCap) {
         this.sectionID = sectionID;
         this.type = type;
-        this.enrollmentTotal = enrollmentTotal;
+        this.totalCoursesTaken = totalCoursesTaken;
         this.enrollmentCap = enrollmentCap;
     }
 
@@ -32,12 +32,12 @@ public class Section
         this.type = type;
     }
 
-    public int getEnrollmentTotal() {
-        return enrollmentTotal;
+    public int getTotalCoursesTaken() {
+        return totalCoursesTaken;
     }
 
-    public void setEnrollmentTotal(int enrollmentTotal) {
-        this.enrollmentTotal = enrollmentTotal;
+    public void setTotalCoursesTaken(int totalCoursesTaken) {
+        this.totalCoursesTaken = totalCoursesTaken;
     }
 
     public int getEnrollmentCap() {
