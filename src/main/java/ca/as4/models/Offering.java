@@ -12,6 +12,9 @@ public class Offering implements Comparable<Offering>
     private String term;
     private int[] enrollments;
     private boolean[] components;
+    private String componentCode;
+    private int enrollmentTotal;
+    private int enrollmentCap;
     private ArrayList<Section> sections = new ArrayList<>();
 
     public Offering() { }
@@ -95,6 +98,30 @@ public class Offering implements Comparable<Offering>
 
     public ArrayList<Section> getSections() {
         return sections;
+    }
+
+    public void setComponentCode(String componentCode) {
+        this.componentCode = componentCode;
+    }
+
+    public String getComponentCode() {
+        return componentCode;
+    }
+
+    public int getEnrollmentTotal() {
+        return enrollmentTotal;
+    }
+
+    public int getEnrollmentCap() {
+        return enrollmentCap;
+    }
+
+    public void setEnrollmentTotal(int enrollmentTotal) {
+        this.enrollmentTotal = enrollmentTotal;
+    }
+
+    public void setEnrollmentCap(int enrollmentCap) {
+        this.enrollmentCap = enrollmentCap;
     }
 
     @Override

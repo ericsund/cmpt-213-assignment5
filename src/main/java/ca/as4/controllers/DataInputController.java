@@ -23,7 +23,7 @@ public class DataInputController {
     // -----------------------------------------------------------------------------------------------------------------
     // todo move to watcher controller
     private AtomicLong nextWatcherId = new AtomicLong();
-    private ArrayList<Watcher> watchersList = new ArrayList<>();
+    private Watcher list = new Watcher();
     // -----------------------------------------------------------------------------------------------------------------
 
     private boolean needToReSort = true;
@@ -70,15 +70,22 @@ public class DataInputController {
     // todo move to watcher controller
 
     @GetMapping("/api/watchers")
-    public ArrayList<Watcher> getWatchers()
+    public List<Watcher> getWatchers()
     {
-        return watchersList;
+        fetchData();
+        structureData();
+        checkReSort();
+        return list.getObservers();
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/api/watchers")
     public void createWatcher(@RequestBody Watcher newWatcher)
     {
+        fetchData();
+        structureData();
+        checkReSort();
+
         // model should always have an updated copy of departments
         newWatcher.setDepartments(departments);
 
@@ -92,7 +99,7 @@ public class DataInputController {
         // course id implicitly set via curl
         newWatcher.setCatalogNumber(newWatcher.getDeptId(), newWatcher.getCourseId());
 
-        watchersList.add(newWatcher);
+        list.addObserver(newWatcher);
     }
     // -----------------------------------------------------------------------------------------------------------------
 
@@ -252,6 +259,7 @@ public class DataInputController {
             Offering newOffering = buildOffering(newData);
 
             newCourse.addOffering(newOffering); // add new offering to new course
+            list.insert(newOffering, newDept.getDeptId(), newCourse.getCourseId());
 
             newDept.addCourse(newCourse); // add new course to new department
             Collections.sort(newDept.getCourses()); // resort courses with new addition
@@ -585,9 +593,12 @@ public class DataInputController {
         boolean[] components = newData.getComponents();
 
         Offering newOffering = new Offering();
+        newOffering.setComponentCode(newData.getComponent());
 
         newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
         newOffering.setLocation(newData.getLocation());
+        newOffering.setEnrollmentCap(newData.getEnrollmentCap());
+        newOffering.setEnrollmentTotal(newData.getEnrollmentTotal());
 
         if (newData.getInstructors().size() > 0)
         {
@@ -641,6 +652,9 @@ public class DataInputController {
 
         Data temp = buildTempDataFile(group, enrollments, components);
         Offering newOffering = new Offering();
+        newOffering.setComponentCode(temp.getComponent());
+        newOffering.setEnrollmentCap(temp.getEnrollmentCap());
+        newOffering.setEnrollmentTotal(temp.getEnrollmentTotal());
 
         newOffering.setCourseOfferingId(nextCourseOfferingId.incrementAndGet());
         newOffering.setLocation(group.get(group.size()-1).getLocation());

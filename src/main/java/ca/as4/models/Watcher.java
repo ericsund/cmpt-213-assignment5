@@ -1,10 +1,16 @@
 package ca.as4.models;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
-public class Watcher
+public class Watcher implements Iterable<Offering>
 {
     private ArrayList<Department> departments = new ArrayList<>();
+
+    private ArrayList<String> events = new ArrayList<>();
+
+    private ArrayList<Watcher> observers = new ArrayList<>();
+    private ArrayList<Offering> list = new ArrayList<>();
 
     private long id;
 
@@ -30,6 +36,14 @@ public class Watcher
         this.courseId = courseId;
         this.catalogNumber = catalogNumber;
         this.department = departments.get((int)deptId-1);
+    }
+
+    public List<Watcher> getObservers() {
+        return observers;
+    }
+
+    public void addObserver(Watcher observer) {
+        observers.add(observer);
     }
 
     public void setId(long id) {
@@ -97,6 +111,46 @@ public class Watcher
 
     public String getCatalogNumber() {
         return catalogNumber;
+    }
+
+    public void stateChanged(long deptId, long courseId) {
+        if (this.getDeptId() == deptId &&
+                this.getCourseId() == courseId)
+        {
+            // update the screen
+            Date dNow = new Date();
+            SimpleDateFormat ft = new SimpleDateFormat ("E MM.dd hh:mm:ss zzz yyyy");
+            String currentTime = ft.format(dNow);
+
+            Offering o = list.get(list.size()-1);
+
+            String newEvent = ": Added section " + o.getComponentCode() + " with enrollment (" +
+                    o.getEnrollmentTotal() + " / " + o.getEnrollmentCap()
+                    + ") to offering " + o.getTerm() + " " + o.getYear();
+
+            String updateMessage = currentTime + newEvent;
+
+            events.add(updateMessage);
+        }
+    }
+
+    public void insert(Offering offering, long deptId, long courseId) {
+        list.add(offering);
+        notifyObservers(deptId, courseId);
+    }
+
+    @Override
+    public Iterator<Offering> iterator() { return Collections.unmodifiableList(list).iterator(); }
+
+    /**
+     * Code to handle being observable
+     */
+    // (Should put this list at top with other fields!)
+
+    private void notifyObservers(long deptId, long courseId) {
+        for (Watcher observer : observers) {
+            observer.stateChanged(deptId, courseId);
+        }
     }
 }
 

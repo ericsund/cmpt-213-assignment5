@@ -132,19 +132,13 @@ curl -i -s -H "Content-Type: application/json" \
 # Watchers
 # -------------------------------
 # List watchers
-curl -i -s -H "Content-Type: application/json" \
-    -X GET ${SERVER}/api/watchers
+curl -i -s -H "Content-Type: application/json" -X GET localhost:8080/api/watchers
 
 # Create watcher
-curl -i -s -H "Content-Type: application/json" \
-    -X POST -d "{
-        \"deptId\": ${DEPT},
-        \"courseId\": ${COURSE}
-    }" ${SERVER}/api/watchers
+curl -i -s -H "Content-Type: application/json" -X POST -d "{\"deptId\": 2,\"courseId\": 1}" localhost:8080/api/watchers
 
 # Get events for watcher
-curl -i -s -H "Content-Type: application/json" \
-    -X GET ${SERVER}/api/watchers/1
+curl -i -s -H "Content-Type: application/json" -X GET localhost:8080/api/watchers/1
 
 # Delete Watcher
 curl -i -X DELETE ${SERVER}/api/watchers/1
