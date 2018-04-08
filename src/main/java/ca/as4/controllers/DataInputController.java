@@ -1,6 +1,7 @@
 package ca.as4.controllers;
 
 import ca.as4.models.*;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -54,6 +55,10 @@ public class DataInputController {
 
         @Override
         public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+            fetchData();
+            structureData();
+            checkReSort();
+
             configurer.enable();
         }
 
@@ -72,8 +77,6 @@ public class DataInputController {
     @GetMapping("/api/watchers")
     public ArrayList<Watcher> getWatchers()
     {
-        fetchData();
-        structureData();
         checkReSort();
 
         return list.getWatchers();
@@ -83,8 +86,7 @@ public class DataInputController {
     @PostMapping("/api/watchers")
     public void createWatcher(@RequestBody Watcher newWatcher)
     {
-        fetchData();
-        structureData();
+
         checkReSort();
 
         // model should always have an updated copy of departments
@@ -106,8 +108,6 @@ public class DataInputController {
     @GetMapping("/api/watchers/{id}")
     public ArrayList<String> getSpecificWatcherEvents(@PathVariable("id") long id)
     {
-        fetchData();
-        structureData();
         checkReSort();
 
         if (list.getWatchers().size() == 0) {
@@ -125,8 +125,6 @@ public class DataInputController {
     @RequestMapping(value = "/api/watchers/{id}", method = RequestMethod.DELETE)
     public void deleteSpecificWatcher(@PathVariable("id") long id)
     {
-        fetchData();
-        structureData();
         checkReSort();
 
         if (list.getWatchers().size() == 0) {
@@ -154,7 +152,6 @@ public class DataInputController {
     @GetMapping("/api/dump-model")
     public void dumpModel()
     {
-        fetchData(); // fetch data if we haven't already
         checkReSort();
 
         display.printDump(allSortedClasses);
@@ -164,8 +161,6 @@ public class DataInputController {
     @GetMapping("/api/departments")
     public ArrayList<Department> getDepartments()
     {
-        fetchData(); // fetch data if we haven't already
-        structureData(); // structure data if we haven't already
         checkReSort();
         return departments;
     }
@@ -173,8 +168,6 @@ public class DataInputController {
     @GetMapping("/api/departments/{id}/courses")
     public ArrayList<Course> getCourses(@PathVariable("id") long id)
     {
-        fetchData(); // fetch data if we haven't already
-        structureData(); // structure data if we haven't already
         checkReSort();
 
         // quit if id is out of range
