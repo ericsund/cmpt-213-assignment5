@@ -1,5 +1,8 @@
 package ca.as4.models;
 
+/*
+Section model to store the total enrollment information per class type
+*/
 public class Section
 {
     private long sectionID;

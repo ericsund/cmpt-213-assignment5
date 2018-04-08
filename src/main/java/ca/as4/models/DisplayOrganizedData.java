@@ -3,6 +3,9 @@ package ca.as4.models;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/*
+Functions to help display organized and properly calculated class data
+*/
 public class DisplayOrganizedData {
     public DisplayOrganizedData() { }
 

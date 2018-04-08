@@ -125,7 +125,7 @@ curl -i -s -H "Content-Type: application/json" \
         "component": "LEC",
         "enrollmentTotal": 110,
         "instructor": "Mystery Instructor"
-    }' ${SERVER}/api/addoffering
+    }' localhost:8080/api/addoffering
 
 
 # Watchers

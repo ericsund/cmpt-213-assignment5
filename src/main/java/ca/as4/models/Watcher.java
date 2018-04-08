@@ -3,6 +3,9 @@ package ca.as4.models;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/*
+Watcher model to monitor the watchers
+*/
 public class Watcher implements Iterable<Offering>
 {
     private ArrayList<Department> departments = new ArrayList<>();

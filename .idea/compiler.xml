@@ -6,6 +6,8 @@
       <module name="Code-Course_Planner_test" target="1.8" />
       <module name="Course_Planner_main" target="1.8" />
       <module name="Course_Planner_test" target="1.8" />
+      <module name="Desktop-Course_Planner_main" target="1.8" />
+      <module name="Desktop-Course_Planner_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

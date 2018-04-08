@@ -2,6 +2,9 @@ package ca.as4.models;
 
 import java.util.ArrayList;
 
+/*
+Data model that holds a specific data entry for access later on in the program
+*/
 public class Data {
     private int semester;
     private String subjectName;

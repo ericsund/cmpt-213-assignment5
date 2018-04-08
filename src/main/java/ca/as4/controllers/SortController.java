@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-// todo this class might have to be moved into a model in an effort to keep logic away from controllers???
+/*
+SortController to parse and sort the data for easy manipulation and traversal in the DataInputController
+*/
 public class SortController {
     private int numClassesInList = 0;
 
@@ -51,6 +53,7 @@ public class SortController {
         return false;
     }
 
+    //Sort arraylist by semesters to get semester order then by section order
     private void sortEachArrayList(ArrayList<ArrayList<Data>> organizeClasses)
     {
         for (int i = 0; i < organizeClasses.size(); i++)
@@ -73,6 +76,7 @@ public class SortController {
         });
     }
 
+    //Find all the related classes and group them together
     private void findAndInsertRelatedData(ArrayList<Data> allData, ArrayList<ArrayList<Data>> organizeClasses, Data compareData, int counter)
     {
         ArrayList<Data> otherCampus = new ArrayList<>();

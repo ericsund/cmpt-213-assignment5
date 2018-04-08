@@ -19,9 +19,9 @@ Helper functions for the DataInputController
 public class DataInputHelper
 {
 
+    //All the variables needed
     public AtomicLong nextWatcherId = new AtomicLong();
     public Watcher list = new Watcher();
-
 
     public boolean needToReSort = true;
 
@@ -44,6 +44,7 @@ public class DataInputHelper
             "INSTRUCTORS", "COMPONENTCODE"};
 
 
+    //Returns an arraylist of offerings per course
     public ArrayList<Offering> getOfferingsHelper(ArrayList<Course> courses, long id, long IDOffset)
     {
         if (!(id < courses.size() + IDOffset && id >= IDOffset))
@@ -73,6 +74,7 @@ public class DataInputHelper
         return offerings;
     }
 
+    //Returns an arraylist of sections per offering of a course
     public ArrayList<Section> getSection(ArrayList<Offering> offerings, long id)
     {
         if (!(id <= offerings.size() && id > 0))
@@ -99,6 +101,7 @@ public class DataInputHelper
         return sections;
     }
 
+    //Function to resort the data if it need be
     public void checkReSort() {
         if (needToReSort)
         {
@@ -108,6 +111,7 @@ public class DataInputHelper
         }
     }
 
+    //Get the name of the last department for data organization purposes
     private String getLastDepartmentName()
     {
         String lastDepartmentName;
@@ -149,6 +153,7 @@ public class DataInputHelper
         ArrayList<Integer> semesters = newDept.getSemesters();
         updateTreeTable(currentMap, newData, semesters);
         newDept.setSemesters(semesters);
+        newDept.setGraphTreeMap(currentMap);
 
         departments.add(newDept); // add new department to master list
     }
@@ -174,6 +179,7 @@ public class DataInputHelper
         ArrayList<Integer> semesters = tempDept.getSemesters();
         updateTreeTable(currentMap, newData, semesters);
         tempDept.setSemesters(semesters);
+        tempDept.setGraphTreeMap(currentMap);
 
         departments.add(tempDept);
     }
@@ -199,6 +205,7 @@ public class DataInputHelper
         ArrayList<Integer> semesters = tempDept.getSemesters();
         updateTreeTable(currentMap, newData, semesters);
         tempDept.setSemesters(semesters);
+        tempDept.setGraphTreeMap(currentMap);
 
         departments.add(tempDept);
     }
@@ -323,6 +330,7 @@ public class DataInputHelper
         }
     }
 
+    //for each department, build the offerings, sections, and graph treeMaps
     private void buildGroupedClasses(ArrayList<Data> currentDataSet, String comparisonStr, ArrayList<Data> group,
                                      Course newCourse, TreeMap<Integer, GraphData> currentTable, ArrayList<Integer> semesters) {
         if (currentDataSet.size() == 1)
@@ -355,6 +363,7 @@ public class DataInputHelper
         }
     }
 
+    //Perform updates to the treeTable if there are ever any changes that need to be done
     private void updateTreeTable(TreeMap<Integer, GraphData> currentTable, Data currentOffering, ArrayList<Integer> semesters) {
         if (currentOffering.getComponent().equals("LEC"))
         {
@@ -376,6 +385,7 @@ public class DataInputHelper
         }
     }
 
+    //Add the offering to the current class before moving on the next one
     private String getStringAndBuildNewOffering(String comparisonStr, ArrayList<Data> group, Course newCourse, Data currentOffering, String currentStr) {
         if (!currentStr.equals(comparisonStr))
         {
@@ -388,6 +398,7 @@ public class DataInputHelper
         return comparisonStr;
     }
 
+    //Build offering if only a single class is added
     private Offering buildOffering(Data newData)
     {
         int[] enrollments = newData.getEnrollments();
@@ -428,6 +439,7 @@ public class DataInputHelper
         return newOffering;
     }
 
+    //build offering if a class with multiple offerings is inserted
     private Offering buildOffering(ArrayList<Data> group)
     {
         int[] enrollments = group.get(0).getEnrollments();
@@ -475,6 +487,7 @@ public class DataInputHelper
         return newOffering;
     }
 
+    //Build a temp data file to use for building the offering
     private Data buildTempDataFile(ArrayList<Data> group, int[] enrollments, boolean[] components)
     {
         Data temp = new Data();
@@ -522,6 +535,7 @@ public class DataInputHelper
         newOffering.setYear(year);
     }
 
+    //Calculate the enrollment information per data
     private void setSection(Data currentOffering, Offering newOffering)
     {
         ArrayList<Section> sections = new ArrayList<>();
@@ -542,6 +556,7 @@ public class DataInputHelper
         newOffering.setSections(sections);
     }
 
+    //read in the csv data
     private void retrieveCSVData()
     {
         String CSVFile = "data/course_data_2018.csv";
@@ -601,6 +616,7 @@ public class DataInputHelper
         return true;
     }
 
+    //convert csv read in data to a data file and insert into arraylist
     private void convertDataAndInsert(String[] line)
     {
         // create new blank data object

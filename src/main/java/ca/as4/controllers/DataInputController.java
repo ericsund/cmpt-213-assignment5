@@ -12,6 +12,9 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import java.util.*;
 
+/*
+Mappings controller to control all the data in the DataInputController
+*/
 @RestController
 public class DataInputController {
 
@@ -297,13 +300,13 @@ public class DataInputController {
         ArrayList<Integer> semesters = currentDepartment.getSemesters();
         Collections.sort(semesters);
 
-        GraphData[] graph = new GraphData[currentMap.size()];
         ArrayList<GraphData> graphData = new ArrayList<>();
 
-        for (int i = 0; i < semesters.size(); i++)
+        System.out.println(semesters.size());
+        System.out.println(currentMap.size());
+        for (Integer semester : semesters)
         {
-            graph[i] = currentMap.get(semesters.get(i));
-            graphData.add(graph[i]);
+            graphData.add(currentMap.get(semester));
         }
 
         return graphData;

@@ -2,6 +2,9 @@ package ca.as4.models;
 
 import java.util.ArrayList;
 
+/*
+Offering model to implement the current class offerings
+*/
 public class Offering implements Comparable<Offering>
 {
     private long courseOfferingId;

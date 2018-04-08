@@ -2,6 +2,9 @@ package ca.as4.models;
 
 import java.util.ArrayList;
 
+/*
+Course model to implement all the seperate courses
+*/
 public class Course implements Comparable<Course>
 {
     private long courseId;

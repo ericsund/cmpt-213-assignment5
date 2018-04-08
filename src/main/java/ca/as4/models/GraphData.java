@@ -1,5 +1,8 @@
 package ca.as4.models;
 
+/*
+Graph model for modeling the graphs data per department
+*/
 public class GraphData
 {
     private int semesterCode;
