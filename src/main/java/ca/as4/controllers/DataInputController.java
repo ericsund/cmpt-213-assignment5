@@ -106,6 +106,18 @@ public class DataInputController {
     @GetMapping("/api/watchers/{id}")
     public ArrayList<String> getSpecificWatcherEvents(@PathVariable("id") long id)
     {
+        fetchData();
+        structureData();
+        checkReSort();
+
+        if (list.getWatchers().size() == 0) {
+            throw new BadRequest("Trying to get from an empty set of watchers!");
+        }
+
+        if (id - 1 > list.getWatchers().size() || id < 0) {
+            throw new BadRequest("The ID " + id + " is out of range.");
+        }
+
         return list.getSpecificWatcherEvents(id);
     }
 
@@ -113,6 +125,10 @@ public class DataInputController {
     @RequestMapping(value = "/api/watchers/{id}", method = RequestMethod.DELETE)
     public void deleteSpecificWatcher(@PathVariable("id") long id)
     {
+        fetchData();
+        structureData();
+        checkReSort();
+
         if (list.getWatchers().size() == 0) {
             throw new BadRequest("Trying to remove from an empty set of watchers!");
         }
