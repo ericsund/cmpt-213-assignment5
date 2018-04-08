@@ -1,7 +1,6 @@
 package ca.as4.controllers;
 
 import ca.as4.models.*;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -89,7 +88,7 @@ public class DataInputController {
 
         checkReSort();
 
-        // model should always have an updated copy of departments
+        // watcher model should always have an updated copy of departments
         newWatcher.setDepartments(departments);
 
         newWatcher.setId(nextWatcherId.incrementAndGet());
@@ -114,7 +113,7 @@ public class DataInputController {
             throw new BadRequest("Trying to get from an empty set of watchers!");
         }
 
-        if (id - 1 > list.getWatchers().size() || id < 0) {
+        if (id - 1 > list.getWatchers().size() || id - 1 < 0) {
             throw new BadRequest("The ID " + id + " is out of range.");
         }
 
@@ -131,7 +130,7 @@ public class DataInputController {
             throw new BadRequest("Trying to remove from an empty set of watchers!");
         }
 
-        if (id - 1 > list.getWatchers().size() || id < 0) {
+        if (id - 1 > list.getWatchers().size() || id - 1 < 0) {
             throw new BadRequest("The ID " + id + " is out of range.");
         }
 
@@ -170,10 +169,12 @@ public class DataInputController {
     {
         checkReSort();
 
-        // quit if id is out of range
-        if (!(id <= departments.size() && id > 0))
-        {
-            throw new NotFound("Department for id " + id + " is out of range.");
+        if (departments.size() == 0) {
+            throw new BadRequest("Trying to get from an empty set of departments!");
+        }
+
+        if (id - 1 > departments.size() || id - 1 < 0) {
+            throw new BadRequest("The ID " + id + " is out of range.");
         }
 
         // search for department and return its courses
@@ -205,7 +206,7 @@ public class DataInputController {
             IDOffset = courses.get(0).getCourseId();
         }
 
-        return grabOfferings(courses, courseID, IDOffset);
+        return getOfferingsHelper(courses, courseID, IDOffset);
     }
 
     @GetMapping("/api/departments/{deptID}/courses/{courseID}/offerings/{sectionID}")
@@ -214,43 +215,15 @@ public class DataInputController {
                                           @PathVariable("sectionID") long sectionID)
     {
         ArrayList<Offering> offerings = getOfferings(deptID, courseID);
-        return grabSection(offerings, sectionID);
-    }
-
-    private ArrayList<Section> grabSection(ArrayList<Offering> offerings, long id)
-    {
-        if (!(id <= offerings.size() && id > 0))
-        {
-            throw new NotFound("Offerings for " + id + " is out of range.");
-        }
-
-        ArrayList<Section> sections = new ArrayList<>();
-        for (Offering offering : offerings)
-        {
-            if (offering.getCourseOfferingId() == id)
-            {
-                sections = offering.getSections();
-                if (sections.size() == 0)
-                {
-                    throw new NotFound("The id: " + id + " has no sections.");
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
-        return sections;
+        return getSection(offerings, sectionID);
     }
 
     // todo refactor this to work with hash tables?
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/api/addoffering")
-    public void addoffering(@RequestBody Data newData)
+    public void addOffering(@RequestBody Data newData)
     {
-        fetchData(); // fetch data if we haven't already
-        structureData(); // structure data if we haven't already
         checkReSort();
 
         boolean existingDepartment = false;
@@ -265,7 +238,15 @@ public class DataInputController {
         int foundDept = 0;
         int foundCourse = 0;
 
-        // find the department
+        /*
+        There are three cases when creating an offering:
+
+        1.  New offering; new course; new dept
+        2.  New offering; old course; old dept
+        3.  New offering; new course; old dept;
+        */
+
+        // Case 1: find the department
         for (int i = 0; i < departments.size(); i++)
         {
             Department department = departments.get(i);
@@ -277,29 +258,14 @@ public class DataInputController {
 
         }
 
-        // create a new offering for a new course in a new department
+        // Set case 1: create a new offering for a new course in a new department
         if (!(existingDepartment))
         {
-            Department newDept = new Department();
-            newDept.setDeptId(nextDepartmentId.incrementAndGet());
-            newDept.setName(newData.getSubjectName());
-
-            Course newCourse = new Course();
-            newCourse.setCourseId(nextCourseId.incrementAndGet());
-            newCourse.setCatalogNumber(newData.getCatalogNumber());
-
-            Offering newOffering = buildOffering(newData);
-
-            newCourse.addOffering(newOffering); // add new offering to new course
-            list.addOffering(newOffering, newDept.getDeptId(), newCourse.getCourseId()); // add to watchers list
-
-            newDept.addCourse(newCourse); // add new course to new department
-            Collections.sort(newDept.getCourses()); // resort courses with new addition
-            departments.add(newDept); // add new department to master list
+            newOfferingNewCourseNewDept(newData);
             needToReSort = true;
         }
 
-        // find the course in the existing department
+        // Case 2: find the course in the existing department
         if (existingDepartment)
         {
             ArrayList<Course> courses = departments.get(foundDept).getCourses();
@@ -314,41 +280,17 @@ public class DataInputController {
             }
         }
 
-        // create new offering for an existing course in existing department
+        // Set case 2: create new offering for an existing course in existing department
         if (existingDepartment && existingCourse)
         {
-            Department tempDept = departments.get(foundDept);
-            departments.remove(foundDept);
-
-            Course tempCourse = tempDept.getSpecificCourse(foundCourse);
-            tempDept.removeSpecificCourse(foundCourse);
-
-            Offering newOffering = buildOffering(newData);
-            list.addOffering(newOffering, tempDept.getDeptId(), tempCourse.getCourseId()); // add to watchers list
-
-            tempCourse.addOffering(newOffering); // add new offering to existing course
-            Collections.sort(tempCourse.getOfferings()); // resort offerings with new addition
-            tempDept.addCourse(foundCourse, tempCourse); // put existing course back where we found it
-            departments.add(tempDept);
+            newOfferingOldCourseOldDept(foundDept, foundCourse, newData);
             needToReSort = true;
         }
 
-        // create new offering for a new course in existing department
+        // Otherwise set case 3: create new offering for a new course in existing department
         if (existingDepartment && !(existingCourse))
         {
-            Department tempDept = departments.get(foundDept);
-            departments.remove(foundDept);
-
-            Course newCourse = new Course();
-
-            newCourse.setCatalogNumber(newData.getCatalogNumber());
-            Offering newOffering = buildOffering(newData);
-            list.addOffering(newOffering, tempDept.getDeptId(), newCourse.getCourseId()); // add to watchers list
-
-            newCourse.addOffering(newOffering); // add new offering to new course
-            tempDept.addCourse(newCourse); // add new course to existing department
-            Collections.sort(tempDept.getCourses()); // resort courses with new addition
-            departments.add(tempDept);
+            newOfferingNewCourseOldDept(foundDept, newData);
             needToReSort = true;
         }
     }
@@ -383,7 +325,7 @@ public class DataInputController {
         return graphData;
     }
 
-    private ArrayList<Offering> grabOfferings(ArrayList<Course> courses, long id, long IDOffset)
+    private ArrayList<Offering> getOfferingsHelper(ArrayList<Course> courses, long id, long IDOffset)
     {
         if (!(id < courses.size() + IDOffset && id >= IDOffset))
         {
@@ -412,6 +354,32 @@ public class DataInputController {
         return offerings;
     }
 
+    private ArrayList<Section> getSection(ArrayList<Offering> offerings, long id)
+    {
+        if (!(id <= offerings.size() && id > 0))
+        {
+            throw new NotFound("Offerings for " + id + " is out of range.");
+        }
+
+        ArrayList<Section> sections = new ArrayList<>();
+        for (Offering offering : offerings)
+        {
+            if (offering.getCourseOfferingId() == id)
+            {
+                sections = offering.getSections();
+                if (sections.size() == 0)
+                {
+                    throw new NotFound("The id: " + id + " has no sections.");
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        return sections;
+    }
+
     private void checkReSort() {
         if (needToReSort)
         {
@@ -436,6 +404,63 @@ public class DataInputController {
         }
 
         return lastDepartmentName;
+    }
+
+    // helper function to create a new offering for a new course in a new department
+    private void newOfferingNewCourseNewDept(Data newData)
+    {
+        Department newDept = new Department();
+        newDept.setDeptId(nextDepartmentId.incrementAndGet());
+        newDept.setName(newData.getSubjectName());
+
+        Course newCourse = new Course();
+        newCourse.setCourseId(nextCourseId.incrementAndGet());
+        newCourse.setCatalogNumber(newData.getCatalogNumber());
+
+        Offering newOffering = buildOffering(newData);
+
+        newCourse.addOffering(newOffering); // add new offering to new course
+        list.addOffering(newOffering, newDept.getDeptId(), newCourse.getCourseId()); // add to watchers list
+
+        newDept.addCourse(newCourse); // add new course to new department
+        Collections.sort(newDept.getCourses()); // resort courses with new addition
+        departments.add(newDept); // add new department to master list
+    }
+
+    // helper function to create new offering for an existing course in existing department
+    private void newOfferingOldCourseOldDept(int foundDept, int foundCourse, Data newData)
+    {
+        Department tempDept = departments.get(foundDept);
+        departments.remove(foundDept);
+
+        Course tempCourse = tempDept.getSpecificCourse(foundCourse);
+        tempDept.removeSpecificCourse(foundCourse);
+
+        Offering newOffering = buildOffering(newData);
+        list.addOffering(newOffering, tempDept.getDeptId(), tempCourse.getCourseId()); // add to watchers list
+
+        tempCourse.addOffering(newOffering); // add new offering to existing course
+        Collections.sort(tempCourse.getOfferings()); // resort offerings with new addition
+        tempDept.addCourse(foundCourse, tempCourse); // put existing course back where we found it
+        departments.add(tempDept);
+    }
+
+    // Helper function to create new offering for a new course in existing department
+    private void newOfferingNewCourseOldDept(int foundDept, Data newData)
+    {
+        Department tempDept = departments.get(foundDept);
+        departments.remove(foundDept);
+
+        Course newCourse = new Course();
+
+        newCourse.setCatalogNumber(newData.getCatalogNumber());
+        Offering newOffering = buildOffering(newData);
+        list.addOffering(newOffering, tempDept.getDeptId(), newCourse.getCourseId()); // add to watchers list
+
+        newCourse.addOffering(newOffering); // add new offering to new course
+        tempDept.addCourse(newCourse); // add new course to existing department
+        Collections.sort(tempDept.getCourses()); // resort courses with new addition
+        departments.add(tempDept);
     }
 
     // retrieve and sort csv data if we haven't already

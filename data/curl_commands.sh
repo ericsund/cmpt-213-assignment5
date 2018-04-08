@@ -43,8 +43,7 @@ curl -i -s -H "Content-Type: application/json" \
     -X GET ${SERVER}/api/departments/${DEPT}/courses/${COURSE}/offerings
 
 # Get specific course offering
-curl -i -s -H "Content-Type: application/json" \
-    -X GET ${SERVER}/api/departments/${DEPT}/courses/${COURSE}/offerings/${OFFERING}
+curl -i -s -H "Content-Type: application/json" -X GET localhost:8080/api/departments/2/courses/2/offerings/1
 
 
 # errors
@@ -88,7 +87,7 @@ curl -i -s -H "Content-Type: application/json" \
         "instructor": "Brian Fraser"
     }' ${SERVER}/api/addoffering
 
-#curl -i -s -H "Content-Type: application/json" -X POST  -d '{"semester": 1191,"subjectName": "CMNS","catalogNumber": 110,"location": "SURREY","enrollmentCap": 90,"component": "LEC","enrollmentTotal": 89,"instructor": "Brian Fraser"}' localhost:8080/api/addoffering
+#curl -i -s -H "Content-Type: application/json" -X POST  -d '{"semester": 1191,"subjectName": "CPSC","catalogNumber": 510,"location": "SURREYY","enrollmentCap": 90,"component": "LEC","enrollmentTotal": 89,"instructor": "Brian Fraser"}' localhost:8080/api/addoffering
 
 curl -i -s -H "Content-Type: application/json" \
     -X POST  -d '{
