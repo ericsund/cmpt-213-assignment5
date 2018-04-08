@@ -169,5 +169,15 @@ public class Watcher implements Iterable<Offering>
         // this will always be non-zero when called in stateChanged()
         return list;
     }
+
+    public ArrayList<String> getSpecificWatcherEvents(long id) {
+        return observers.get((int)id - 1).getEvents();
+    }
+
+    public void removeWatcher(long id) {
+        if (observers.size() != 0) {
+            observers.remove((int)id - 1);
+        }
+    }
 }
 

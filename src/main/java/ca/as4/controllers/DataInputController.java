@@ -115,6 +115,20 @@ public class DataInputController {
 
         list.addObserver(newWatcher);
     }
+
+    @GetMapping("/api/watchers/{id}")
+    public ArrayList<String> getSpecificWatcherEvents(@PathVariable("id") long id)
+    {
+        return list.getSpecificWatcherEvents(id);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/api/watchers/{id}", method = RequestMethod.DELETE)
+    public void deleteSpecificWatcher(@PathVariable("id") long id)
+    {
+        list.removeWatcher(id);
+    }
+
     // -----------------------------------------------------------------------------------------------------------------
 
     @GetMapping("/api/about")

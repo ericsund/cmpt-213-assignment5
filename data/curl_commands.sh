@@ -88,7 +88,7 @@ curl -i -s -H "Content-Type: application/json" \
         "instructor": "Brian Fraser"
     }' ${SERVER}/api/addoffering
 
-#curl -i -s -H "Content-Type: application/json" -X POST  -d '{"semester": 1191,"subjectName": "CMPT","catalogNumber": 100,"location": "SURREY","enrollmentCap": 90,"component": "LEC","enrollmentTotal": 89,"instructor": "Brian Fraser"}' localhost:8080/api/addoffering
+#curl -i -s -H "Content-Type: application/json" -X POST  -d '{"semester": 1191,"subjectName": "CMNS","catalogNumber": 110,"location": "SURREY","enrollmentCap": 90,"component": "LEC","enrollmentTotal": 89,"instructor": "Brian Fraser"}' localhost:8080/api/addoffering
 
 curl -i -s -H "Content-Type: application/json" \
     -X POST  -d '{
@@ -141,7 +141,7 @@ curl -i -s -H "Content-Type: application/json" -X POST -d "{\"deptId\": 2,\"cour
 curl -i -s -H "Content-Type: application/json" -X GET localhost:8080/api/watchers/1
 
 # Delete Watcher
-curl -i -X DELETE ${SERVER}/api/watchers/1
+curl -i -X DELETE localhost:8080/api/watchers/1
 
 # errors
 curl -i -s -H "Content-Type: application/json" \
