@@ -6,8 +6,8 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Code-Course_Planner_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Code-Course_Planner_main.iml" group="Course_Planner" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Code-Course_Planner_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Code-Course_Planner_test.iml" group="Course_Planner" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Course_Planner.iml" filepath="$PROJECT_DIR$/.idea/modules/Course_Planner.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Course_Planner_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Course_Planner_main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Course_Planner_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Course_Planner_test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Course_Planner_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Course_Planner_main.iml" group="Course_Planner" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Course_Planner_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Course_Planner_test.iml" group="Course_Planner" />
     </modules>
   </component>
 </project>

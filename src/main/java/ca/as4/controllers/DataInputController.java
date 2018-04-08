@@ -76,7 +76,7 @@ public class DataInputController {
         structureData();
         checkReSort();
 
-        return list.getObservers();
+        return list.getWatchers();
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -93,16 +93,14 @@ public class DataInputController {
         newWatcher.setId(nextWatcherId.incrementAndGet());
 
         newWatcher.setDepartment(newWatcher.getDeptId());
-        // department id implicitly set via curl
         newWatcher.setDeptId(newWatcher.getDepartment().getDeptId());
         newWatcher.setName(newWatcher.getDeptId());
 
         newWatcher.setCourse(newWatcher.getCourseId());
-        // course id implicitly set via curl
         newWatcher.setCourseId(newWatcher.getCourse().getCourseId());
         newWatcher.setCatalogNumber(newWatcher.getDeptId(), newWatcher.getCourseId());
 
-        list.addObserver(newWatcher);
+        list.addWatcher(newWatcher);
     }
 
     @GetMapping("/api/watchers/{id}")
@@ -115,11 +113,11 @@ public class DataInputController {
     @RequestMapping(value = "/api/watchers/{id}", method = RequestMethod.DELETE)
     public void deleteSpecificWatcher(@PathVariable("id") long id)
     {
-        if (list.getObservers().size() == 0) {
+        if (list.getWatchers().size() == 0) {
             throw new BadRequest("Trying to remove from an empty set of watchers!");
         }
 
-        if (id - 1 > list.getObservers().size() || id < 0) {
+        if (id - 1 > list.getWatchers().size() || id < 0) {
             throw new BadRequest("The ID " + id + " is out of range.");
         }
 
@@ -284,7 +282,7 @@ public class DataInputController {
             Offering newOffering = buildOffering(newData);
 
             newCourse.addOffering(newOffering); // add new offering to new course
-            list.insert(newOffering, newDept.getDeptId(), newCourse.getCourseId()); // add to watchers list
+            list.addOffering(newOffering, newDept.getDeptId(), newCourse.getCourseId()); // add to watchers list
 
             newDept.addCourse(newCourse); // add new course to new department
             Collections.sort(newDept.getCourses()); // resort courses with new addition
@@ -317,7 +315,7 @@ public class DataInputController {
             tempDept.removeSpecificCourse(foundCourse);
 
             Offering newOffering = buildOffering(newData);
-            list.insert(newOffering, tempDept.getDeptId(), tempCourse.getCourseId()); // add to watchers list
+            list.addOffering(newOffering, tempDept.getDeptId(), tempCourse.getCourseId()); // add to watchers list
 
             tempCourse.addOffering(newOffering); // add new offering to existing course
             Collections.sort(tempCourse.getOfferings()); // resort offerings with new addition
@@ -336,7 +334,7 @@ public class DataInputController {
 
             newCourse.setCatalogNumber(newData.getCatalogNumber());
             Offering newOffering = buildOffering(newData);
-            list.insert(newOffering, tempDept.getDeptId(), newCourse.getCourseId()); // add to watchers list
+            list.addOffering(newOffering, tempDept.getDeptId(), newCourse.getCourseId()); // add to watchers list
 
             newCourse.addOffering(newOffering); // add new offering to new course
             tempDept.addCourse(newCourse); // add new course to existing department
