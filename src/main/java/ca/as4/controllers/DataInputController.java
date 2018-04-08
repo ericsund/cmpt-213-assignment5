@@ -76,17 +76,6 @@ public class DataInputController {
         structureData();
         checkReSort();
 
-//        debug
-//        ArrayList<Watcher> watchers = list.getObservers();
-//        Watcher w = watchers.get(watchers.size()-1);
-//        System.out.println("We have " + watchers.size() + " observers!");
-//        System.out.println("Watcher data for its dept: " + w.getDepartment().getName());
-//        System.out.println("Watcher data for its cat number: " + w.getCourse().getCatalogNumber());
-//
-//        if (w instanceof Watcher) {
-//            System.out.println("We have a watcher!");
-//        }
-
         return list.getObservers();
     }
 
@@ -126,6 +115,14 @@ public class DataInputController {
     @RequestMapping(value = "/api/watchers/{id}", method = RequestMethod.DELETE)
     public void deleteSpecificWatcher(@PathVariable("id") long id)
     {
+        if (list.getObservers().size() == 0) {
+            throw new BadRequest("Trying to remove from an empty set of watchers!");
+        }
+
+        if (id - 1 > list.getObservers().size() || id < 0) {
+            throw new BadRequest("The ID " + id + " is out of range.");
+        }
+
         list.removeWatcher(id);
     }
 

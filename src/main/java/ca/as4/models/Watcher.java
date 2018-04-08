@@ -43,7 +43,26 @@ public class Watcher implements Iterable<Offering>
     }
 
     public void addObserver(Watcher observer) {
-        observers.add(observer);
+
+        String observerName = observer.getName();
+        String catalogNumber = observer.getCatalogNumber();
+
+        if (observers.size() > 0)
+        {
+            for (Watcher currentObserver : observers)
+            {
+                if (!(currentObserver.getName().equals(observerName) &&
+                        currentObserver.getCatalogNumber().equals(catalogNumber)))
+                {
+                    observers.add(observer);
+                }
+            }
+        }
+
+        else
+        {
+            observers.add(observer);
+        }
     }
 
     public void setId(long id) {
@@ -56,10 +75,6 @@ public class Watcher implements Iterable<Offering>
 
     public void setDepartment(long deptId) {
         this.department = departments.get((int)deptId-1);
-//        System.out.println("name is: " + this.department.getName() + " with id " + this.deptId);
-//        for (Department d : departments) {
-//            System.out.println(d.getName() + " with id " + d.getDeptId());
-//        }
     }
 
     public void setDeptId(long deptId) {
@@ -68,12 +83,10 @@ public class Watcher implements Iterable<Offering>
 
     public void setName(long deptId) {
         this.name = departments.get((int)deptId-1).getName();
-//        System.out.println("department name set: " + this.name);
     }
 
     public void setCourse(long courseId) {
-        this.course = this.departments.get((int)deptId-1).getSpecificCourse((int)courseId-1);
-//        System.out.println("course catalog number is: " + this.course.getCatalogNumber() + " with id " + this.courseId);
+        this.course = this.departments.get((int)deptId-1).getSpecificCourse((int)courseId - 1);
     }
 
     public void setCourseId(long courseId) {
@@ -82,7 +95,6 @@ public class Watcher implements Iterable<Offering>
 
     public void setCatalogNumber(long deptId, long courseId) {
         this.catalogNumber = this.departments.get((int)deptId-1).getSpecificCourse((int)courseId-1).getCatalogNumber();
-//        System.out.println("course catalog number is: " + this.course.getCatalogNumber() + " with id " + this.courseId);
     }
 
     public long getId() {
@@ -114,7 +126,6 @@ public class Watcher implements Iterable<Offering>
     }
 
     private void stateChanged(ArrayList<Offering> list, Watcher observer, long deptId, long courseId) {
-        System.out.println("deptId: " + deptId + " and courseId: " + courseId);
         if (observer.getDeptId() == deptId &&
                 observer.getCourseId() == courseId)
         {
@@ -141,18 +152,12 @@ public class Watcher implements Iterable<Offering>
 
     public void insert(Offering offering, long deptId, long courseId) {
         list.add(offering);
-        System.out.println("list size: " + list.size());
-        System.out.println("last thing in the list: " + list.get(0));
-        System.out.println("deptId: " + deptId + " and courseId: " + courseId);
         notifyObservers(list, deptId, courseId);
     }
 
     @Override
     public Iterator<Offering> iterator() { return Collections.unmodifiableList(list).iterator(); }
 
-    /**
-     * Code to handle being observable
-     */
     // (Should put this list at top with other fields!)
 
     private void notifyObservers(ArrayList<Offering> list, long deptId, long courseId) {
