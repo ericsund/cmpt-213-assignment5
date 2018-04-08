@@ -1,5 +1,6 @@
-package ca.as4.controllers;
+package ca.as4.models;
 
+import ca.as4.controllers.SortController;
 import ca.as4.models.*;
 
 import java.io.BufferedReader;
@@ -15,7 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /*
 Helper functions for the DataInputController
 */
-public class DataInputControllerHelper
+public class DataInputHelper
 {
 
     public AtomicLong nextWatcherId = new AtomicLong();
@@ -142,6 +143,13 @@ public class DataInputControllerHelper
 
         newDept.addCourse(newCourse); // add new course to new department
         Collections.sort(newDept.getCourses()); // resort courses with new addition
+
+        // update the graph
+        TreeMap<Integer, GraphData> currentMap = newDept.getGraphTreeMap();
+        ArrayList<Integer> semesters = newDept.getSemesters();
+        updateTreeTable(currentMap, newData, semesters);
+        newDept.setSemesters(semesters);
+
         departments.add(newDept); // add new department to master list
     }
 
@@ -160,6 +168,13 @@ public class DataInputControllerHelper
         tempCourse.addOffering(newOffering); // add new offering to existing course
         Collections.sort(tempCourse.getOfferings()); // resort offerings with new addition
         tempDept.addCourse(foundCourse, tempCourse); // put existing course back where we found it
+
+        // update the graph
+        TreeMap<Integer, GraphData> currentMap = tempDept.getGraphTreeMap();
+        ArrayList<Integer> semesters = tempDept.getSemesters();
+        updateTreeTable(currentMap, newData, semesters);
+        tempDept.setSemesters(semesters);
+
         departments.add(tempDept);
     }
 
@@ -178,6 +193,13 @@ public class DataInputControllerHelper
         newCourse.addOffering(newOffering); // add new offering to new course
         tempDept.addCourse(newCourse); // add new course to existing department
         Collections.sort(tempDept.getCourses()); // resort courses with new addition
+
+        // update the graph
+        TreeMap<Integer, GraphData> currentMap = tempDept.getGraphTreeMap();
+        ArrayList<Integer> semesters = tempDept.getSemesters();
+        updateTreeTable(currentMap, newData, semesters);
+        tempDept.setSemesters(semesters);
+
         departments.add(tempDept);
     }
 
@@ -330,6 +352,27 @@ public class DataInputControllerHelper
             group.add(currentOffering);
 
             updateTreeTable(currentTable, currentOffering, semesters);
+        }
+    }
+
+    private void updateTreeTable(TreeMap<Integer, GraphData> currentTable, Data currentOffering, ArrayList<Integer> semesters) {
+        if (currentOffering.getComponent().equals("LEC"))
+        {
+            GraphData tempGraph = new GraphData(currentOffering.getSemester(), currentOffering.getEnrollmentTotal());
+
+            if (!semesters.contains(currentOffering.getSemester()))
+            {
+                semesters.add(currentOffering.getSemester());
+            }
+
+            if (currentTable.containsKey(currentOffering.getSemester()))
+            {
+                currentTable.get(currentOffering.getSemester()).incrementEnrollmentTotal(currentOffering.getEnrollmentTotal());
+            }
+            else
+            {
+                currentTable.put(currentOffering.getSemester(), tempGraph);
+            }
         }
     }
 
@@ -653,26 +696,5 @@ public class DataInputControllerHelper
         }
 
         return stringToFix;
-    }
-
-    private void updateTreeTable(TreeMap<Integer, GraphData> currentTable, Data currentOffering, ArrayList<Integer> semesters) {
-        if (currentOffering.getComponent().equals("LEC"))
-        {
-            GraphData tempGraph = new GraphData(currentOffering.getSemester(), currentOffering.getEnrollmentTotal());
-
-            if (!semesters.contains(currentOffering.getSemester()))
-            {
-                semesters.add(currentOffering.getSemester());
-            }
-
-            if (currentTable.containsKey(currentOffering.getSemester()))
-            {
-                currentTable.get(currentOffering.getSemester()).incrementEnrollmentTotal(currentOffering.getEnrollmentTotal());
-            }
-            else
-            {
-                currentTable.put(currentOffering.getSemester(), tempGraph);
-            }
-        }
     }
 }

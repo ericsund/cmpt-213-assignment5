@@ -15,7 +15,7 @@ import java.util.*;
 @RestController
 public class DataInputController {
 
-    private DataInputControllerHelper b = new DataInputControllerHelper();
+    private DataInputHelper b = new DataInputHelper();
 
     // enabling Spring servlet
     // copied from: https://stackoverflow.com/questions/36596069/spring-boot-mvc-whitelabel-error-page#36609620
